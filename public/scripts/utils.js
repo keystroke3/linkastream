@@ -49,7 +49,6 @@ function savem3u() {
 	} else {
 		s = source.split("/")[0];
 	}
-	filename = s+datetime+'.m3u'
 	var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
 	saveAs(blob, filename);
 
