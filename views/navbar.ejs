@@ -1,0 +1,95 @@
+<link rel="stylesheet" type="text/css" href="styles/navbar.css" />
+<!-- <div id="nav"> -->
+<ul id="navbar">
+	<li id="nav-home" class="buttons">
+		<a href="/">Home</a>
+	</li>
+	<li id="nav-about" class="text toright">
+		<a href="/about">About</a>
+	</li>
+	<li id="nav-faq" class="text toright">
+		<a href="/faq">FAQ</a>
+	</li>
+	<li id="nav-supported" class="buttons toright">
+		<a href="/supported">Supported</a>
+	</li>
+</ul>
+<!-- </div> -->
+<% if (title == 'home') { %>
+<style>
+	#navbar li:nth-child(1) {
+		padding: 0.5em;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		border-radius: 6px;
+		background-color: rgb(26, 26, 26);
+		color: white;
+		border: none;
+		text-align: center;
+		cursor: pointer;
+		min-width: fit-content;
+		font-size: large;
+		margin-top: -0.5em;
+	}
+</style>
+<% } else if (title == 'about') { %>
+<style>
+	#navbar li:nth-child(2) {
+		padding: 0.5em;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		border-radius: 6px;
+		background-color: rgb(26, 26, 26);
+		color: white;
+		border: none;
+		text-align: center;
+		cursor: pointer;
+		min-width: fit-content;
+		font-size: large;
+		margin-top: -0.5em;
+	}
+</style>
+<% } else if (title == 'faq') { %>
+<style>
+	#navbar li:nth-child(3) {
+		padding: 0.5em;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		border-radius: 6px;
+		background-color: rgb(26, 26, 26);
+		color: white;
+		border: none;
+		text-align: center;
+		cursor: pointer;
+		min-width: fit-content;
+		font-size: large;
+		margin-top: -0.5em;
+	}
+</style>
+<% } else if (title == 'supported') { %>
+<style>
+	#navbar li:last-child {
+		padding: 0.5em;
+		-moz-border-radius: 5px;
+		-webkit-border-radius: 5px;
+		border-radius: 6px;
+		background-color: rgb(26, 26, 26);
+		color: white;
+		border: none;
+		text-align: center;
+		cursor: pointer;
+		min-width: fit-content;
+		font-size: large;
+		margin-top: -0.5em;
+	}
+</style>
+<% } else if (title == '404') { %>
+<style>
+	#navbar {
+		display: none;
+	}
+	.outer {
+		margin-top: 10%;
+	}
+</style>
+<% } %>

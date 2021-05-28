@@ -1,0 +1,22 @@
+<% if (expires === 'none') { %>
+<p><%=message%></p>
+<% } else { %>
+<p><%=message%></p>
+<p id='expiry'>It expres on <%=expires%></p>
+<% } %> 
+
+<% if (results === 'true') { %>
+<div id="link"><p id="link-text"><%= m3ulink %></p></div>
+<p id="sourcelink"><%=sourcelink %></p>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<div id="buttons">
+	<button id="copybtn" onclick="copyLink()">copy</button>
+	<button id="savebtn" onclick="savem3u()">Save m3u</button>
+	<button id="donatebtn" onclick="window.location='/donate'">Donate</button>
+</div>
+<% } else { %>
+<div id="buttons">
+	<button id="donatebtn" onclick="window.location='/donate'">Donate</button>
+</div>
+
+<% } %>

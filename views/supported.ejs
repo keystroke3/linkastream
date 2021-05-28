@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+	<%- include('head') -%>
+	<body>
+		<link rel="stylesheet" type="text/css" href="styles/supported.css" />
+		<div class="outer">
+			<div class="columns" id="top">
+				<a class="columns" href="/">
+					<img src="images/m3u-vert-black.png" />
+				</a>
+				<p>
+					Here you will find all the sites and platforms supported You can use CTRL+F to quickly find a site
+				</p>
+			</div>
+			<ul id="all-sites">
+				<% sites.forEach((site) => { %>
+				<li class="site"><%= site %></li>
+				<% }) %>
+			</ul>
+		</div>
+	</body>
+</html>

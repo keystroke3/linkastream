@@ -1,0 +1,28 @@
+a{
+    color: #E5C07B;
+}
+#navbar{
+    display: flex;
+	font-size: 1em;
+    margin: auto;
+    padding: 1%;
+    font-family: Comfortaa;
+    width: 90%;
+    margin-top: 1%;
+}
+#navbar li a{
+    text-decoration: none;
+    color: white;
+}
+.toright{
+    margin-left: 1em;
+}
+
+#nav-about{
+    margin-left: auto;
+}
+#nav-home{
+    margin-right: auto;
+}
+
+

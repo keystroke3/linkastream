@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+	<%- include('head') -%>
+	<body>
+		<div class="outer">
+			<div class="columns" id="top">
+				<a class="columns" href="/">
+					<img src="images/m3u-vert-black.png" />
+				</a>
+				<p>
+					The fastest way to find a direct stream url for a live stream 
+				</p>
+			</div>
+			<div class="inner columns">
+				<div class="vblock" id="leftblk"></div>
+				<div class="vblock" id="centerblk">
+					<div id="search-results" class="columns vblock">
+						<div id="search-bar">
+							<form action="search?url=" class="columns">
+								<input type="text" placeholder="Paste Video Url" name="url" />
+								<button id="search-btn" onclick="startAnim()">Search</button>
+							</form>
+						</div>
+						<div id="results" class="columns"><%- include('results') -%></div>
+						<div id="center-ad" class="vblock"></div>
+					</div>
+				</div>
+				<div class="vblock" id="rightblk"></div>
+			</div>
+		</div>
+	</body>
+</html>

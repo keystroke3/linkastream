@@ -1,0 +1,144 @@
+* {
+	overflow: hidden;
+	margin: 0;
+	padding: 0;
+}
+p {
+	font-family: "Comfortaa";
+	text-align: center;
+	word-wrap: normal;
+	color: #fff;
+	font-size: larger;
+}
+input {
+	margin-bottom: 3%;
+	border-radius: 5px;
+	height: 3em;
+	font-size: large;
+	padding-left: 1em;
+}
+
+button {
+	padding: 0.5em;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border-radius: 6px;
+	color: rgb(26, 26, 26);
+	font-family: "Roboto";
+	font-size: 1em;
+	text-decoration: none;
+	border: none;
+	text-align: center;
+	margin: auto;
+	cursor: pointer;
+	min-width: fit-content;
+	font-size: large;
+}
+
+body {
+    background: linear-gradient(43deg, rgba(116,148,94,1) 0%, rgba(19,9,121,1) 45%, rgba(255,0,140,1) 100%); 
+	height: 100vh;
+}
+
+.columns {
+	display: flex;
+	flex: 0 1;
+	flex-direction: column;
+}
+.inner {
+	display: flex;
+	flex-direction: row;
+	margin: auto;
+}
+.vblock {
+	margin: auto;
+}
+#centerblk {
+	width: 90%;
+	height: 100%;
+}
+#search-results {
+	width: 80%;
+}
+#results {
+	text-align: center;
+}
+#results p {
+	padding: 2% 0;
+}
+#link p {
+	font-family: monospace;
+}
+#top {
+	display: flex;
+	width: 80vw;
+	margin: auto;
+}
+#top a img {
+	width: 150px;
+	height: auto;
+	margin: auto;
+}
+#top p {
+	max-width: 70%;
+	margin: auto;
+	padding: 2% 0;
+}
+#output {
+	margin: auto;
+}
+#link {
+	overflow-y: scroll;
+	overflow-wrap: normal;
+	text-align: center;
+	max-height: 10vh;
+	max-width: 85%;
+	margin: auto;
+	margin-bottom: 2%;
+}
+
+#search-btn {
+	background-color: #63cdcf;
+	width: 25%;
+}
+#copybtn {
+	background-color: #8eb0d6;
+}
+
+#savebtn {
+	background-color: #63cdcf;
+}
+#buttons {
+	display: flex;
+	flex-wrap: wrap;
+	margin: auto;
+}
+#buttons button {
+	white-space: nowrap;
+	margin: 0.5rem;
+}
+#donatebtn {
+	background-color: #e5c07b;
+	margin: auto;
+}
+
+#sourcelink {
+	font-size: 0;
+	margin: -1.5%;
+}
+#expiry {
+	font-size: small;
+	margin-top: -1.5%;
+}
+#supportedbtn {
+	background-color: black;
+	color: white;
+	margin-right: 0;
+	margin-top: 1%;
+	margin-left: auto;
+}
+#suported {
+	display: flex;
+	width: 95vw;
+	margin-right: auto;
+}

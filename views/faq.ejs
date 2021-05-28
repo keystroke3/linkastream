@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+	<%- include('head') -%>
+	<body>
+		<style>
+			body{
+				overflow-y: scroll;
+			}
+			.qa{
+				max-width: 60%;
+				margin: auto;
+				margin-top: 1em;
+			}
+			.q{
+				text-align: left;
+				font-weight: 500;
+				font-size: larger;
+			}
+			.a{
+				font-size: medium;
+				text-align: left;
+				margin-bottom: 1em;
+				font-family: sans-serif;
+			}
+			ul{
+				color: white;
+				width: 80%;
+				list-style: square;
+				margin: auto;
+				font-size: medium;
+				font-family: sans-serif;
+			}
+			li{
+				margin-bottom: .25em;
+			}
+		</style>
+		<div class="outer">
+			<div class="columns" id="top">
+				<a class="columns" href="/">
+					<img src="images/m3u-vert-black.png" />
+				</a>
+			</div>
+		<div class="qa">
+
+			<p class="q">
+				Why does this exist?
+			</p>
+
+			<p class="a">
+				To create better accessibility to streaming content without having to be on the  platform where it is being broadcast. This could be for any number of reasons, from the platform being blocked, to not wanting to watch ads, and even to play the with different rules.
+			</p>
+
+			<p class="q">
+				Why does my link have an expiry?
+			</p>
+
+			<p class="a">
+				Some platforms, like Youtube, place an limit on the time that a link can be used. After that time is up, the link is no longer valid. The functionality of showing expirty time currently only supported for Youtube
+			</p>
+
+			<p class="q">
+				I can't get a link for stream X or video Y on platform Z
+			</p>
+
+			<p class="a">
+				There are a number of reasons why this could happen:
+				<ul>
+					<li>
+						The platform could be down
+					</li>
+					<li>
+						The platform, video, stream could be restricted in your area
+					</li>
+					
+					<li>
+						The platform may not be supported by this tool. Please refer to the Supported Platforms list.
+					</li>
+				</ul>
+			</p>
+			<br>
+			<br>
+			<br>
+		</div>
+		</div>
+	</body>
+</html>
