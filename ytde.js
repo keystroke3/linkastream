@@ -3,7 +3,11 @@ const express = require("express");
 const ytde = require('youtube-dl-exec')
 const fs = require("fs");
 const app = express();
-const port = 8000;
+const dotenv = require('dotenv')
+dotenv.config()
+const port = process.env.PORT
+
+console.log(port)
 
 app.use(express.static("public"));
 let m3ulink = "";
