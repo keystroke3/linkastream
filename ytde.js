@@ -90,7 +90,7 @@ app.get("/headless", async (req, res) => {
 		try {
 			url = req.query.url;
 			m3ulink = await ytde(url, { getUrl: true });
-			if (req.query.api == "true") {
+			if (req.query.json == "true") {
 				res.json({'m3ulink': m3ulink});
 			} else {
 				res.redirect(302, m3ulink);
