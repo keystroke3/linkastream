@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+	<%- include('head') -%>
+	<body>
+		<link rel="stylesheet" href="styles/history.css" />
+		<div class="outer">
+			<div class="columns" id="top">
+				<a class="columns" href="/">
+					<img src="images/linkastream.png" />
+				</a>
+			</div>
+			<div id="content">
+				<table id="hist-table">
+					<tr>
+						<th>Query Url</th>
+						<th>Time</th>
+						<th>Stream Link</th>
+						<th></th>
+					</tr>
+				</table>
+				<script>
+					if (window.localStorage.length != 0) {
+						var table = document.getElementById('hist-table')
+						Object.keys(localStorage).forEach(function (key, i) {
+							let result = JSON.parse(localStorage.getItem(key));
+							let copybtn = ` 
+	<button class="copybtn" onclick="copyLink('hist-link${i}')"><span id='hist-span${i}' class="material-icons">assignment</span></button>`
+							var row = `<tr>
+								<td>${key}</td>
+								<td>${result[0]}</td>
+								<td id='hist-link${i}'>${result[1]}</td>
+								<td>${copybtn}</td>
+								</tr>`;
+								table.innerHTML += row
+						});
+					} else {
+						console.log("no history");
+					}
+				</script>
+			</div>
+		</div>
+	</body>
+</html>

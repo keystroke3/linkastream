@@ -1,5 +1,5 @@
 * {
-	overflow: hidden;
+	/* overflow: hidden; */
 	margin: 0;
 	padding: 0;
 }
@@ -26,7 +26,6 @@ button {
 	border-radius: 6px;
 	color: rgb(26, 26, 26);
 	font-family: "Roboto";
-	font-size: 1em;
 	text-decoration: none;
 	border: none;
 	text-align: center;
@@ -71,7 +70,7 @@ body {
 	padding: 2% 0;
 }
 #link p {
-	font-family: monospace;
+	font-family: Source Code Pro, monospace;
 }
 #top {
 	display: flex;

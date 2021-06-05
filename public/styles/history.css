@@ -1,0 +1,37 @@
+table {
+	color: white;
+	width: 80%;
+	margin: auto;
+    overflow-x: scroll;
+}
+td {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	max-width: 150px;
+	white-space: nowrap;
+	margin: auto;
+}
+tr{
+    /* margin: auto; */
+    border-spacing: 5px;
+    font-family: "roboto";
+    margin-bottom: 1.5em;
+}
+th{
+    font: large comfortaa;
+    text-align: left;
+}
+
+.copybtn {
+	background-color: #8eb0d600;
+    padding: 0;
+	color: #8eb0d6;
+	text-align: center;
+	margin: auto;
+	cursor: pointer;
+	min-width: fit-content;
+	font-size: large;
+}
+#link-text{
+    font: medium Source Code Pro, monospace;
+}

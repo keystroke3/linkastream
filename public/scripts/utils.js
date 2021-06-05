@@ -1,5 +1,5 @@
-function copyLink() {
-	var text = document.getElementById("link-text").innerText;
+function copyLink(txt) {
+	var text = document.getElementById(txt).innerText;
 	var textArea = document.createElement("textarea");
 	textArea.style.position = "fixed";
 	textArea.style.top = 0;
@@ -28,11 +28,18 @@ function copyLink() {
 		var successful = document.execCommand("copy");
 		var msg = successful ? "successful" : "unsuccessful";
 		console.log("Copying text command was " + msg);
-		var copybtn = document.getElementById("copybtn");
-		copybtn.value = "copied!";
-		copybtn.innerHTML = "copied!";
+		if (txt.includes("hist")) {
+			btnid = "hist-span" + txt.slice(-1);
+			var copybtn = document.getElementById(btnid);
+			copybtn.value = "assignment_turned_in";
+			copybtn.innerHTML = "assignment_turned_in";
+		} else {
+			var copybtn = document.getElementById("copybtn");
+			copybtn.value = "copied!";
+			copybtn.innerHTML = "copied!";
+		}
 	} catch (err) {
-		console.log("Oops, unable to copy");
+		console.log(err);
 	}
 
 	document.body.removeChild(textArea);
@@ -49,11 +56,9 @@ function savem3u() {
 	} else {
 		s = source.split("/")[0];
 	}
-	filename = s+datetime+'.m3u'
+	filename = s + datetime + ".m3u";
 	var blob = new Blob([text], { type: "text/plain;charset=utf-8" });
 	saveAs(blob, filename);
-
-	// console.log(text);
 }
 
 window.addEventListener("load", () => {
@@ -64,4 +69,11 @@ window.addEventListener("load", () => {
 function startAnim() {
 	const preloader = document.querySelector(".preload");
 	preloader.classList.remove("preload-finish");
+}
+
+function AddToHist() {
+	var link = document.getElementById("link-text").innerText;
+	var source = document.getElementById("sourcelink").innerText;
+	localStorage.setItem(source, link);
+	console.log("item added");
 }

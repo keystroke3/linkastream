@@ -2,18 +2,28 @@
 <p><%=message%></p>
 <% } else { %>
 <p><%=message%></p>
-<p id='expiry'>It expres on <%=expires%></p>
-<% } %> 
-
-<% if (results === 'true') { %>
+<p id="expiry">It expres on <%=expires%></p>
+<% } %> <% if (results === 'true') { %>
 <div id="link"><p id="link-text"><%= m3ulink %></p></div>
 <p id="sourcelink"><%=sourcelink %></p>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <div id="buttons">
-	<button id="copybtn" onclick="copyLink()">copy</button>
+	<button id="copybtn" onclick="copyLink('link-text')">copy</button>
 	<button id="savebtn" onclick="savem3u()">Save m3u</button>
 	<button id="donatebtn" onclick="window.location='/donate'">Donate</button>
+	<a href="/history" id="history">history</a>
 </div>
+<!-- <div id="hist">
+	<a href="/history" id="history"></a>
+</div> -->
+<script>
+	var source = "<%= sourcelink %>"
+	var link = "<%= m3ulink %>+"
+	d2 = Date(Date.now()).split(" ")
+	timestamp = d2[1] + ' ' + d2[2] + ' ' + d2[4]
+	localStorage.setItem(source, JSON.stringify([timestamp, link]));
+	console.log("item added");
+</script>
 <% } else { %>
 <div id="buttons">
 	<button id="donatebtn" onclick="window.location='/donate'">Donate</button>
