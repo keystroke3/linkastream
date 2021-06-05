@@ -36,7 +36,8 @@ button {
 }
 
 body {
-    background: linear-gradient(43deg, rgba(116,148,94,1) 0%, rgba(19,9,121,1) 45%, rgba(255,0,140,1) 100%); 
+    /* background: linear-gradient(43deg, rgba(116,148,94,1) 0%, rgba(19,9,121,1) 45%, rgba(255,0,140,1) 100%);  */
+	background-color: #1A0030;
 	height: 100vh;
 }
 
@@ -75,7 +76,7 @@ body {
 	margin: auto;
 }
 #top a img {
-	width: 150px;
+	width: 250px;
 	height: auto;
 	margin: auto;
 }
