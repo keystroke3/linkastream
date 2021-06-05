@@ -1,5 +1,5 @@
 #paylinks{
-    max-width: 40%;
+    max-width: 50%;
     margin: auto;
 }
 #paylinks li{
@@ -11,10 +11,16 @@
     font-family: monospace;
     font-size: medium;
     word-break: break-all;
-    max-width: 50%;
+    /* max-width: 50%; */
+    overflow-x: scroll;
 }
 #paylinks li img{
+    width: 150px;
     margin-left: 0;
+    margin-right: 5%;
+}
+#paylinks li:last-child p{
+max-width: 50%;
 }
 
 #qr-overlay {
@@ -30,3 +36,12 @@
     z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
     cursor: pointer; /* Add a pointer on hover */
   }
+
+.finance{
+    display: flex;
+    flex-wrap: wrap;
+}
+.outer{
+    overflow-y: scroll;
+    height: max-content;
+}

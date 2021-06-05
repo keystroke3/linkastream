@@ -16,6 +16,7 @@ input {
 	height: 3em;
 	font-size: large;
 	padding-left: 1em;
+	text-align: center;
 }
 
 button {
@@ -55,8 +56,10 @@ body {
 	margin: auto;
 }
 #centerblk {
-	width: 90%;
-	height: 100%;
+	width: 100%;
+	height:  max-content;
+	overflow-y: scroll;
+	/* height: 100%; */
 }
 #search-results {
 	width: 80%;
@@ -74,15 +77,18 @@ body {
 	display: flex;
 	width: 80vw;
 	margin: auto;
+	margin-bottom: 2em;
 }
 #top a img {
 	width: 250px;
+	/* width: 30%; */
 	height: auto;
 	margin: auto;
 }
 #top p {
 	max-width: 70%;
 	margin: auto;
+	margin-top: 1.5em;
 	padding: 2% 0;
 }
 #output {
