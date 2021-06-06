@@ -1,5 +1,5 @@
 * {
-	/* overflow: hidden; */
+	overflow: hidden;
 	margin: 0;
 	padding: 0;
 }
@@ -21,8 +21,6 @@ input {
 
 button {
 	padding: 0.5em;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
 	border-radius: 6px;
 	color: rgb(26, 26, 26);
 	font-family: "Roboto";
@@ -31,12 +29,11 @@ button {
 	text-align: center;
 	margin: auto;
 	cursor: pointer;
-	min-width: fit-content;
+	min-width: max-content;
 	font-size: large;
 }
 
 body {
-    /* background: linear-gradient(43deg, rgba(116,148,94,1) 0%, rgba(19,9,121,1) 45%, rgba(255,0,140,1) 100%);  */
 	background-color: #1A0030;
 	height: 100vh;
 }
@@ -76,6 +73,7 @@ body {
 	display: flex;
 	width: 80vw;
 	margin: auto;
+	margin-top: 1em;
 	margin-bottom: 2em;
 }
 #top a img {

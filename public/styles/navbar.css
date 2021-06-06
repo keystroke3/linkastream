@@ -10,6 +10,9 @@ a{
     width: 90%;
     margin-top: 1%;
 }
+#navbar li {
+    list-style: none;
+}
 #navbar li a{
     text-decoration: none;
     color: white;

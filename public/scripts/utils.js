@@ -77,3 +77,23 @@ function AddToHist() {
 	localStorage.setItem(source, link);
 	console.log("item added");
 }
+
+function genHistTable() {
+	if (window.localStorage.length != 0) {
+		var table = document.getElementById("hist-table");
+		Object.keys(localStorage).forEach(function (key, i) {
+			let result = JSON.parse(localStorage.getItem(key));
+			let copybtn = ` 
+	<button class="copybtn" onclick="copyLink('hist-link${i}')"><span id='hist-span${i}' class="material-icons">assignment</span></button>`;
+			var row = `<tr>
+								<td>${key}</td>
+								<td>${result[0]}</td>
+								<td id='hist-link${i}'>${result[1]}</td>
+								<td>${copybtn}</td>
+								</tr>`;
+			table.innerHTML += row;
+		});
+	} else {
+		console.log("no history");
+	}
+}
