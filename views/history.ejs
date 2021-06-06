@@ -11,15 +11,30 @@
 			</div>
 			<div id="content">
 				<table id="hist-table">
-					<tr>
-						<th>Query Url</th>
-						<th>Time</th>
-						<th>Stream Link</th>
-						<th></th>
-					</tr>
+					<thead>
+						<tr>
+							<th class="sort-asc" onclick="sortTableByColumn('hist-tbody', 0)">
+								Query Url
+								<span class="material-icons-outlined">north</span>
+								<span class="material-icons-outlined">south</span>
+							</th>
+							<th class="sort-desc" onclick="sortTableByColumn('hist-tbody', 1)">
+								Time
+								<span class="material-icons-outlined">north</span>
+								<span class="material-icons-outlined">south</span>
+							</th>
+							<th class="sort-asc" onclick="sortTableByColumn('hist-tbody', 2)">
+								Stream Link
+								<span class="material-icons-outlined">north</span>
+								<span class="material-icons-outlined">south</span>
+							</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody id="hist-tbody"></tbody>
 				</table>
 				<script>
-					genHistTable()
+					genHistTable();
 				</script>
 			</div>
 		</div>

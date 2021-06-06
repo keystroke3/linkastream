@@ -1,35 +1,38 @@
-#content{
+#content {
 	width: 100%;
-	margin:auto;
+	margin: auto;
 	overflow: auto;
 }
 table {
 	color: white;
 	margin: auto;
 	border-spacing: 20px;
+	background-color: #290349;
+	border-radius: 14px;
 }
 td {
 	overflow: hidden;
 	text-overflow: ellipsis;
-	max-width: 30vw;
+	max-width: 50vw;
 	white-space: nowrap;
 	/* margin: auto; */
 	/* padding-right: 50px; */
 }
-tr{
-    /* margin: auto; */
-    border-spacing: 5px;
-    font-family: "roboto";
-    margin-bottom: 1.5em;
+tr {
+	/* margin: auto; */
+	border-spacing: 5px;
+	font-family: "roboto";
+	margin-bottom: 1.5em;
 }
-th{
-    font: large comfortaa;
-    text-align: left;
+th {
+	font: large comfortaa;
+	text-align: left;
+	cursor: pointer;
 }
 
 .copybtn {
 	background-color: #8eb0d600;
-    padding: 0;
+	padding: 0;
 	color: #8eb0d6;
 	text-align: center;
 	margin: auto;
@@ -37,6 +40,12 @@ th{
 	min-width: max-content;
 	font-size: large;
 }
-#link-text{
-    font: medium Source Code Pro, monospace;
+#link-text {
+	font: medium "Source Code Pro", monospace;
+}
+span {
+	font-family: "Material Icons";
+}
+.off {
+	display: none;
 }

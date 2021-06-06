@@ -80,7 +80,7 @@ function AddToHist() {
 
 function genHistTable() {
 	if (window.localStorage.length != 0) {
-		var table = document.getElementById("hist-table");
+		var tbody = document.getElementById("hist-tbody");
 		Object.keys(localStorage).forEach(function (key, i) {
 			let result = JSON.parse(localStorage.getItem(key));
 			let copybtn = ` 
@@ -91,9 +91,44 @@ function genHistTable() {
 								<td id='hist-link${i}'>${result[1]}</td>
 								<td>${copybtn}</td>
 								</tr>`;
-			table.innerHTML += row;
+			tbody.innerHTML += row;
 		});
+		sortTableByColumn("hist-tbody", 1);
 	} else {
 		console.log("no history");
+	}
+}
+
+function sortTableByColumn(tbl, column) {
+	try {
+		const tb = document.getElementById(tbl);
+		const headerRow = tb.parentElement.firstElementChild.firstElementChild;
+		headerRow.querySelectorAll("span").forEach((sp) => sp.classList.remove("off"));
+		// headerRow.children.forEach(th => console.log(th.children))
+		// console.log(headerRow.children)
+		const headerCol = headerRow.querySelector(`th:nth-child(${column + 1})`);
+		const asc = headerCol.classList.contains("sort-asc") ? true : false;
+		const currentSortClass = asc ? "sort-asc" : "sort-desc";
+		const newSortClass = asc ? "sort-desc" : "sort-asc";
+		const sortIcon = asc ? "north" : "south";
+		const dirModifer = asc ? 1 : -1;
+		const rows = Array.from(tb.querySelectorAll("tr"));
+
+		const sortedRows = rows.sort((a, b) => {
+			const aColText = a.querySelector(`td:nth-child(${column + 1})`).textContent.trim();
+			const bColText = b.querySelector(`td:nth-child(${column + 1})`).textContent.trim();
+			return aColText > bColText ? 1 * dirModifer : -1 * dirModifer;
+		});
+
+		tb.append(...sortedRows);
+		headerCol.classList.replace(currentSortClass, newSortClass);
+		if (asc) {
+			headerCol.lastElementChild.classList.toggle("off", true);
+		} else {
+			headerCol.firstElementChild.classList.toggle("off", true);
+		}
+		// console.log(headerCol.firstElementChild.innerHTML)
+	} catch (err) {
+		console.log(err);
 	}
 }
