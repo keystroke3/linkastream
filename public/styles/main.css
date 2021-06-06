@@ -10,7 +10,7 @@ p {
 	color: #fff;
 	font-size: larger;
 }
-input {
+.text-input {
 	margin-bottom: 3%;
 	border-radius: 5px;
 	height: 3em;

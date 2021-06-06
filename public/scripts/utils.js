@@ -80,20 +80,28 @@ function AddToHist() {
 
 function genHistTable() {
 	if (window.localStorage.length != 0) {
-		var tbody = document.getElementById("hist-tbody");
-		Object.keys(localStorage).forEach(function (key, i) {
-			let result = JSON.parse(localStorage.getItem(key));
-			let copybtn = ` 
+		try {
+			if (window.localStorage.getItem("history")) {
+				throw "History off";
+			}
+
+			var tbody = document.getElementById("hist-tbody");
+			Object.keys(localStorage).forEach(function (key, i) {
+				let result = JSON.parse(localStorage.getItem(key));
+				let copybtn = ` 
 	<button class="copybtn" onclick="copyLink('hist-link${i}')"><span id='hist-span${i}' class="material-icons">assignment</span></button>`;
-			var row = `<tr>
+				var row = `<tr>
 								<td>${key}</td>
 								<td>${result[0]}</td>
 								<td id='hist-link${i}'>${result[1]}</td>
 								<td>${copybtn}</td>
 								</tr>`;
-			tbody.innerHTML += row;
-		});
-		sortTableByColumn("hist-tbody", 1);
+				tbody.innerHTML += row;
+			});
+			sortTableByColumn("hist-tbody", 1);
+		} catch (e) {
+			console.log(e);
+		}
 	} else {
 		console.log("no history");
 	}
@@ -104,8 +112,6 @@ function sortTableByColumn(tbl, column) {
 		const tb = document.getElementById(tbl);
 		const headerRow = tb.parentElement.firstElementChild.firstElementChild;
 		headerRow.querySelectorAll("span").forEach((sp) => sp.classList.remove("off"));
-		// headerRow.children.forEach(th => console.log(th.children))
-		// console.log(headerRow.children)
 		const headerCol = headerRow.querySelector(`th:nth-child(${column + 1})`);
 		const asc = headerCol.classList.contains("sort-asc") ? true : false;
 		const currentSortClass = asc ? "sort-asc" : "sort-desc";
