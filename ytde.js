@@ -7,9 +7,9 @@ const dotenv = require("dotenv");
 dotenv.config();
 const port = process.env.PORT;
 
-const readQueries = fs.readFileSync("stats.json", "utf8");
-const queries_data = JSON.parse(readQueries);
-let queries = queries_data.queries;
+// const readQueries = fs.readFileSync("stats.json", "utf8");
+// const queries_data = JSON.parse(readQueries);
+// let queries = queries_data.queries;
 
 app.use(express.static("public"));
 let m3ulink = "";
