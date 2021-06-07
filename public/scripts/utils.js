@@ -70,63 +70,24 @@ function startAnim() {
 	const preloader = document.querySelector(".preload");
 	preloader.classList.remove("preload-finish");
 }
-
-function AddToHist() {
+function AddToHist(source, link) {
 	try {
-		if (window.localStorage.getItem("history")) {
-			throw "History off";
+		hist = localStorage.getItem("history");
+		if (hist == null) {
+			throw "history not set";
 		}
-
-		var link = document.getElementById("link-text").innerText;
-		var source = document.getElementById("sourcelink").innerText;
-		localStorage.setItem(source, link);
-		console.log("item added");
-	} catch {
-		console.log("histry off");
-	}
-}
-
-function genHistTable() {
-	noHistMsg = document.getElementById("no-hist-msg");
-	noHistMsg.classList.toggle("off", true);
-	if (window.localStorage.length != 0) {
-		try {
-			if (window.localStorage.getItem("history")) {
-				throw "History off";
-			}
-
-			var tbody = document.getElementById("hist-tbody");
-			rows = "";
-			Object.keys(localStorage).forEach(function (key, i) {
-				const result = JSON.parse(localStorage.getItem(key));
-				const copybtn = ` 
-	<button class="copybtn" onclick="copyLink('hist-link${i}')"><span id='hist-span${i}' class="material-icons">assignment</span></button>`;
-				const row = `<tr>
-								<td class="tbllinks">${key}</td>
-								<td class="timestamp">${result[0]}</td>
-								<td class="tbllinks" id='hist-link${i}'>${result[1]}</td>
-								<td>${copybtn}</td>
-								</tr>`;
-				rows += row;
-			});
-			tbody.innerHTML = rows;
-			const checkbtn = document.getElementById("hist-checkbox");
-			checkbtn.checked = true;
-			sortTableByColumn("hist-tbody", 1);
-			psudop.classList.toggle("psudo-hidden", true);
-			console.log("history on");
-		} catch (e) {
-			historyToggle();
-			psudop.classList.toggle("psudo-hidden", false);
+		if (hist == "no") {
 			console.log("history off");
+		} else {
+			d2 = Date(Date.now()).split(" ");
+			timestamp = d2[1] + " " + d2[2] + " " + d2[4];
+			localStorage.setItem(source, JSON.stringify([timestamp, link]));
+			console.log("item added");
 		}
-	} else {
-		const noHistElems = document.getElementsByClassName("no-hist");
-		Array.from(noHistElems).forEach((elem) => {
-			elem.classList.toggle("off", true);
-		});
-		noHistMsg.classList.toggle("off", false);
-		console.log("no history");
+	} catch {
+		localStorage.setItem("history", "yes");
+		console.log(localStorage.getItem("history"));
+		AddToHist(source, link);
 	}
 }
 
@@ -160,39 +121,92 @@ function sortTableByColumn(tbl, column) {
 	}
 }
 
+function genHistTable() {
+	psudop = document.getElementById("psudop");
+	noHistMsg = document.getElementById("no-hist-msg");
+	// check localstorage for data
+	histLen = localStorage.length;
+	// check if history is set and set
+	if (histLen == 0) {
+		localStorage.setItem("history", "yes");
+		genHistTable();
+	} else if (histLen == 1) {
+		// hide elements, display no hist
+		const noHistElems = document.getElementsByClassName("no-hist");
+		Array.from(noHistElems).forEach((elem) => {
+			elem.classList.toggle("off", true);
+		});
+		noHistMsg.classList.toggle("off", false);
+		console.log("no history");
+	} else if (localStorage.getItem("history") == "yes") {
+		noHistMsg.classList.toggle("off", true);
+		psudop.classList.toggle("off", true);
+		// draw hist table and toggle hist on
+		var tbody = document.getElementById("hist-tbody");
+		rows = "";
+		localStorage.removeItem("history");
+		Object.keys(localStorage).forEach(function (key, i) {
+			const result = JSON.parse(localStorage.getItem(key));
+			const copybtn = ` 
+	<button class="copybtn" onclick="copyLink('hist-link${i}')"><span id='hist-span${i}' class="material-icons">assignment</span></button>`;
+			const row = `<tr>
+								<td class="tbllinks">${key}</td>
+								<td class="timestamp">${result[0]}</td>
+								<td class="tbllinks" id='hist-link${i}'>${result[1]}</td>
+								<td>${copybtn}</td>
+								</tr>`;
+			rows += row;
+		});
+		localStorage.setItem("history", "yes");
+		tbody.innerHTML = rows;
+		document.getElementById("hist-checkbox").checked = true;
+		// sort by time
+		sortTableByColumn("hist-tbody", 1);
+		console.log("history table drawn");
+	} else {
+		document.getElementById("hist-checkbox").checked = false;
+		historyToggle();
+		noHistMsg.classList.toggle("off", true);
+		psudop.classList.toggle("off", false);
+		console.log("history off");
+	}
+}
+
 function historyToggle() {
 	const histSwitch = document.getElementById("hist-switch");
 	const checkbtn = document.getElementById("hist-checkbox");
 	const psudop = document.getElementById("psudop");
 	const histElems = document.getElementsByClassName("require-hist");
+	// if check off; hide hist table;set hist 'no'
 	if (!checkbtn.checked) {
 		Array.from(histElems).forEach((elem) => {
 			elem.classList.toggle("hidden", true);
 		});
-		localStorage.setItem("history", "true");
+		localStorage.setItem("history", "no");
 		histSwitch.classList.toggle("history-off", true);
 		histSwitch.classList.toggle("history-on", false);
-		psudop.classList.toggle("psudo-hidden", false);
+		psudop.classList.toggle("off", false);
 	} else {
+		// unhide table and set hist 'yes'
 		Array.from(histElems).forEach((elem) => {
 			elem.classList.toggle("hidden", false);
 		});
 
 		try {
 			document.getElementById("hist-body").firstElementChild;
-			localStorage.removeItem("history");
+			localStorage.setItem("history", "yes");
 		} catch (e) {
-			localStorage.removeItem("history");
+			localStorage.setItem("history", "yes");
 			genHistTable();
 		}
 		histSwitch.classList.toggle("history-off", false);
 		histSwitch.classList.toggle("history-on", true);
-		psudop.classList.toggle("psudo-hidden", true);
+		psudop.classList.toggle("off", true);
 	}
 }
 function clearHist() {
 	if (confirm("are you sure?")) {
 		window.localStorage.clear();
-		window.location.reload()
+		window.location.reload();
 	}
 }

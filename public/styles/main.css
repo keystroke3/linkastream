@@ -73,7 +73,7 @@ body {
 	padding: 2% 0;
 }
 #link p {
-	font-family: Source Code Pro, monospace;
+	font: small 'Source Code Pro', monospace;
 }
 #top {
 	display: flex;

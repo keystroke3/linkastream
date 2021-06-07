@@ -194,9 +194,6 @@ span {
 	visibility: hidden;
 	margin-left: auto;
 }
-.psudo-hidden {
-	display: none;
-}
 #no-hist-msg {
 	width: 100%;
 	height: 100%;

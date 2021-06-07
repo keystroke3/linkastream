@@ -15,12 +15,9 @@
 </div>
 
 <script>
-	var source = "<%= sourcelink %>"
-	var link = "<%= m3ulink %>+"
-	d2 = Date(Date.now()).split(" ")
-	timestamp = d2[1] + ' ' + d2[2] + ' ' + d2[4]
-	localStorage.setItem(source, JSON.stringify([timestamp, link]));
-	console.log("item added");
+	source = "<%= sourcelink %>";
+	link = "<%= m3ulink %>";
+	AddToHist(source, link)
 </script>
 <% } else { %>
 <div id="buttons">
