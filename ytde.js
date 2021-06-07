@@ -16,14 +16,13 @@ let m3ulink = "";
 app.set("view-engine", "ejs");
 
 app.get("/", (req, res) => {
-	console.log(queries);
 	message_text = "";
 	res.render("index.ejs", {
 		results: "false",
 		message: message_text,
 		expires: "none",
 		title: "home",
-		queries: queries,
+		queries: "none",
 	});
 });
 
