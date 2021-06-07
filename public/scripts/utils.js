@@ -72,13 +72,23 @@ function startAnim() {
 }
 
 function AddToHist() {
-	var link = document.getElementById("link-text").innerText;
-	var source = document.getElementById("sourcelink").innerText;
-	localStorage.setItem(source, link);
-	console.log("item added");
+	try {
+		if (window.localStorage.getItem("history")) {
+			throw "History off";
+		}
+
+		var link = document.getElementById("link-text").innerText;
+		var source = document.getElementById("sourcelink").innerText;
+		localStorage.setItem(source, link);
+		console.log("item added");
+	} catch {
+		console.log("histry off");
+	}
 }
 
 function genHistTable() {
+	noHistMsg = document.getElementById("no-hist-msg");
+	noHistMsg.classList.toggle("off", true);
 	if (window.localStorage.length != 0) {
 		try {
 			if (window.localStorage.getItem("history")) {
@@ -86,23 +96,36 @@ function genHistTable() {
 			}
 
 			var tbody = document.getElementById("hist-tbody");
+			rows = "";
 			Object.keys(localStorage).forEach(function (key, i) {
-				let result = JSON.parse(localStorage.getItem(key));
-				let copybtn = ` 
+				const result = JSON.parse(localStorage.getItem(key));
+				const copybtn = ` 
 	<button class="copybtn" onclick="copyLink('hist-link${i}')"><span id='hist-span${i}' class="material-icons">assignment</span></button>`;
-				var row = `<tr>
-								<td>${key}</td>
-								<td>${result[0]}</td>
-								<td id='hist-link${i}'>${result[1]}</td>
+				const row = `<tr>
+								<td class="tbllinks">${key}</td>
+								<td class="timestamp">${result[0]}</td>
+								<td class="tbllinks" id='hist-link${i}'>${result[1]}</td>
 								<td>${copybtn}</td>
 								</tr>`;
-				tbody.innerHTML += row;
+				rows += row;
 			});
+			tbody.innerHTML = rows;
+			const checkbtn = document.getElementById("hist-checkbox");
+			checkbtn.checked = true;
 			sortTableByColumn("hist-tbody", 1);
+			psudop.classList.toggle("psudo-hidden", true);
+			console.log("history on");
 		} catch (e) {
-			console.log(e);
+			historyToggle();
+			psudop.classList.toggle("psudo-hidden", false);
+			console.log("history off");
 		}
 	} else {
+		const noHistElems = document.getElementsByClassName("no-hist");
+		Array.from(noHistElems).forEach((elem) => {
+			elem.classList.toggle("off", true);
+		});
+		noHistMsg.classList.toggle("off", false);
 		console.log("no history");
 	}
 }
@@ -116,16 +139,15 @@ function sortTableByColumn(tbl, column) {
 		const asc = headerCol.classList.contains("sort-asc") ? true : false;
 		const currentSortClass = asc ? "sort-asc" : "sort-desc";
 		const newSortClass = asc ? "sort-desc" : "sort-asc";
-		const sortIcon = asc ? "north" : "south";
 		const dirModifer = asc ? 1 : -1;
 		const rows = Array.from(tb.querySelectorAll("tr"));
+		console.log("sorting table");
 
 		const sortedRows = rows.sort((a, b) => {
 			const aColText = a.querySelector(`td:nth-child(${column + 1})`).textContent.trim();
 			const bColText = b.querySelector(`td:nth-child(${column + 1})`).textContent.trim();
 			return aColText > bColText ? 1 * dirModifer : -1 * dirModifer;
 		});
-
 		tb.append(...sortedRows);
 		headerCol.classList.replace(currentSortClass, newSortClass);
 		if (asc) {
@@ -133,8 +155,44 @@ function sortTableByColumn(tbl, column) {
 		} else {
 			headerCol.firstElementChild.classList.toggle("off", true);
 		}
-		// console.log(headerCol.firstElementChild.innerHTML)
 	} catch (err) {
 		console.log(err);
+	}
+}
+
+function historyToggle() {
+	const histSwitch = document.getElementById("hist-switch");
+	const checkbtn = document.getElementById("hist-checkbox");
+	const psudop = document.getElementById("psudop");
+	const histElems = document.getElementsByClassName("require-hist");
+	if (!checkbtn.checked) {
+		Array.from(histElems).forEach((elem) => {
+			elem.classList.toggle("hidden", true);
+		});
+		localStorage.setItem("history", "true");
+		histSwitch.classList.toggle("history-off", true);
+		histSwitch.classList.toggle("history-on", false);
+		psudop.classList.toggle("psudo-hidden", false);
+	} else {
+		Array.from(histElems).forEach((elem) => {
+			elem.classList.toggle("hidden", false);
+		});
+
+		try {
+			document.getElementById("hist-body").firstElementChild;
+			localStorage.removeItem("history");
+		} catch (e) {
+			localStorage.removeItem("history");
+			genHistTable();
+		}
+		histSwitch.classList.toggle("history-off", false);
+		histSwitch.classList.toggle("history-on", true);
+		psudop.classList.toggle("psudo-hidden", true);
+	}
+}
+function clearHist() {
+	if (confirm("are you sure?")) {
+		window.localStorage.clear();
+		window.location.reload()
 	}
 }

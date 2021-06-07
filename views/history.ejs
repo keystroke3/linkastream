@@ -9,46 +9,56 @@
 					<img src="images/linkastream.png" />
 				</a>
 			</div>
-			<div id="tablebtns">
-				<div id="hist-switch">
-					<label id="hist-lbl" for="No History">Keep History</label>
-					<div id="switch-cont">
-						<label class="switch">
-							<input type="checkbox" name="Turn Off History" checked id="hist-checkbox" />
-							<span class="slider round"></span>
-							History
-						</label>
+			<p id="no-hist-msg">History Is Empty</p>
+			<div class="inner no-hist">
+				<div class="grid-cont no-hist">
+					<div id="tablebtns" class="no-hist">
+						<p id="psudop">a</p>
+						<div id="hist-switch">
+							<label id="hist-lbl" class="no-hist" for="No History">History</label>
+							<div id="switch-cont" class="no-hist">
+								<label class="switch">
+									<input
+										onclick="historyToggle()"
+										type="checkbox"
+										name="Turn Off History"
+										id="hist-checkbox"
+									/>
+									<span class="slider round"></span>
+								</label>
+							</div>
+						</div>
+						<button class="require-hist no-hist" id="clear-hist" onclick="clearHist()">Clear</button>
+					</div>
+					<div class="require-hist no-hist" id="content">
+						<table class="no-hist" id="hist-table">
+							<thead>
+								<tr>
+									<th class="sort-asc" onclick="sortTableByColumn('hist-tbody', 0)">
+										Query Url &nbsp;&nbsp;
+										<span class="material-icons-outlined">north</span>
+										<span class="material-icons-outlined">south</span>
+									</th>
+									<th class="sort-desc" onclick="sortTableByColumn('hist-tbody', 1)">
+										Time
+										<span class="material-icons-outlined">north</span>
+										<span class="material-icons-outlined">south</span>
+									</th>
+									<th class="sort-asc" onclick="sortTableByColumn('hist-tbody', 2)">
+										Stream Link
+										<span class="material-icons-outlined">north</span>
+										<span class="material-icons-outlined">south</span>
+									</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody id="hist-tbody"></tbody>
+						</table>
+						<script>
+							genHistTable();
+						</script>
 					</div>
 				</div>
-				<button id="clear-hist">Clear</button>
-			</div>
-			<div id="content">
-				<table id="hist-table">
-					<thead>
-						<tr>
-							<th class="sort-asc" onclick="sortTableByColumn('hist-tbody', 0)">
-								Query Url
-								<span class="material-icons-outlined">north</span>
-								<span class="material-icons-outlined">south</span>
-							</th>
-							<th class="sort-desc" onclick="sortTableByColumn('hist-tbody', 1)">
-								Time
-								<span class="material-icons-outlined">north</span>
-								<span class="material-icons-outlined">south</span>
-							</th>
-							<th class="sort-asc" onclick="sortTableByColumn('hist-tbody', 2)">
-								Stream Link
-								<span class="material-icons-outlined">north</span>
-								<span class="material-icons-outlined">south</span>
-							</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody id="hist-tbody"></tbody>
-				</table>
-				<script>
-					genHistTable();
-				</script>
 			</div>
 		</div>
 	</body>

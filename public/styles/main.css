@@ -1,5 +1,6 @@
 * {
-	overflow: hidden;
+	overflow: auto;
+	overflow-x: hidden;
 	margin: 0;
 	padding: 0;
 }
@@ -11,12 +12,16 @@ p {
 	font-size: larger;
 }
 .text-input {
+	margin:auto;
 	margin-bottom: 3%;
 	border-radius: 5px;
 	height: 3em;
 	font-size: large;
 	padding-left: 1em;
 	text-align: center;
+	width: 90%;
+	min-width: 150px;
+	max-width: 700px;
 }
 
 button {
@@ -54,7 +59,8 @@ body {
 #centerblk {
 	width: 100%;
 	height:  max-content;
-	overflow-y: scroll;
+	overflow-y: auto;
+	overflow-x: hidden;
 	/* height: 100%; */
 }
 #search-results {
@@ -93,17 +99,17 @@ body {
 }
 #link {
 	overflow-y: scroll;
-	overflow-wrap: normal;
+	overflow-wrap: break-word;
 	text-align: center;
 	max-height: 10vh;
-	max-width: 85%;
+	max-width: 90%;
 	margin: auto;
 	margin-bottom: 2%;
 }
 
 #search-btn {
 	background-color: #63cdcf;
-	width: 25%;
+	width: 250px;
 }
 #copybtn {
 	background-color: #8eb0d6;
@@ -113,8 +119,15 @@ body {
 	background-color: #63cdcf;
 }
 #buttons {
-	display: flex;
-	flex-wrap: wrap;
+	max-width: 700px;
+	min-width: 200px;
+	width: 80%;
+	display: grid;
+	align-items:flex-end;
+	/* grid-template-columns: repeat(4, 1fr);` */
+	grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+	/* flex-wrap: wrap; */
+	/* flex-grow: inherit; */
 	margin: auto;
 }
 #buttons button {

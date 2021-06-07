@@ -1,6 +1,24 @@
+.inner {
+	max-width: 95%;
+	overflow: auto;
+	margin: auto;
+}
+
+.grid-cont {
+	display: grid;
+	overflow: auto;
+	margin: auto;
+	width: max-content;
+	align-items: center;
+	grid-template-columns: repeat(1, 1fr);
+}
 #content {
 	width: 100%;
+	display: flex;
 	margin: auto;
+	overflow: auto;
+}
+body {
 	overflow: auto;
 }
 table {
@@ -9,6 +27,8 @@ table {
 	border-spacing: 20px;
 	background-color: #290349;
 	border-radius: 14px;
+	margin-bottom: 25px;
+	width: 100%;
 }
 thead {
 	border-bottom: #8eb0d6 solid;
@@ -16,13 +36,11 @@ thead {
 td {
 	overflow: hidden;
 	text-overflow: ellipsis;
-	max-width: 50vw;
 	white-space: nowrap;
-	/* margin: auto; */
-	/* padding-right: 50px; */
+	max-width: 20px;
 }
+
 tr {
-	/* margin: auto; */
 	border-spacing: 5px;
 	font-family: "roboto";
 	margin-bottom: 1.5em;
@@ -31,6 +49,15 @@ th {
 	font: large comfortaa;
 	text-align: left;
 	cursor: pointer;
+}
+span {
+	font-family: "Material Icons";
+}
+.tbllinks {
+	max-width: 30vw;
+}
+.timestamp {
+	min-width: 120px;
 }
 
 .copybtn {
@@ -46,19 +73,13 @@ th {
 #link-text {
 	font: medium "Source Code Pro", monospace;
 }
-span {
-	font-family: "Material Icons";
-}
-.off {
-	display: none;
-}
-
 
 /* The switch - the box around the slider */
 .switch {
 	position: relative;
 	display: inline-block;
 	width: 45px;
+	overflow: hidden;
 	height: 24px;
 }
 
@@ -116,26 +137,69 @@ span {
 .slider.round:before {
 	border-radius: 50%;
 }
-#tablebtns{
-	width: 84%;
+#tablebtns {
+	width: 95%;
 	margin: 1em auto;
 	display: flex;
 	overflow: hidden;
 }
-#hist-lbl{
+#hist-lbl {
 	color: #8eb0d6;
-	padding: 5px;
-	font: large 'Roboto';
+	font: large "Roboto";
+	line-break: none;
+	white-space: nowrap;
 }
-#switch-cont{
-	margin-top: 7px;
+#switch-cont {
+	margin-top: 3px;
 	margin-left: 5px;
 }
-#hist-switch{
+#hist-switch {
 	display: flex;
 }
-#clear-hist{
+#clear-hist {
 	margin: unset;
 	margin-left: auto;
 	background-color: #8eb0d6;
+}
+.history-off::before {
+	margin-left: 0;
+	margin-top: 0%;
+}
+
+.history-off {
+	margin-top: 10vh;
+	transition: 200ms linear;
+	margin-bottom: 5%;
+	transform: scale(1.8);
+}
+.history-on {
+	margin-left: 0%;
+	margin-top: 0%;
+	transition: 200ms linear;
+}
+
+.history-on::before {
+	margin-top: 10vh;
+}
+
+.hidden {
+	visibility: hidden;
+	opacity: 0;
+	transition: visibility 0s, opacity 0.5s linear;
+}
+.off {
+	display: none;
+}
+#psudop {
+	visibility: hidden;
+	margin-left: auto;
+}
+.psudo-hidden {
+	display: none;
+}
+#no-hist-msg {
+	width: 100%;
+	height: 100%;
+	margin-top: 35vh;
+	font-size: 30px;
 }
