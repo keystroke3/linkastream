@@ -5,6 +5,7 @@ const fs = require("fs");
 const app = express();
 const dotenv = require("dotenv");
 const { reverse } = require("dns");
+const { url } = require("inspector");
 dotenv.config();
 const port = process.env.PORT;
 const env = process.env.NODE_ENV;
@@ -35,7 +36,8 @@ function countQueries() {
 }
 
 app.get("/search", async (req, res) => {
-	if (!req.query.url) {
+	url = req.query.url;
+	if (!url) {
 		// res.send("No url provided");
 		res.render("index.ejs", {
 			results: "false",
@@ -43,9 +45,15 @@ app.get("/search", async (req, res) => {
 			expires: "none",
 			title: "home",
 		});
+	} else if (url.includes("youtu")) {
+		res.render("index.ejs", {
+			results: "false",
+			message: "Sorry, requests for youtube streams cannot be handled at the moment. Please try again later",
+			expires: "none",
+			title: "home",
+		});
 	} else {
 		try {
-			url = req.query.url;
 			if (env == "prod") {
 				m3ulink = await ytde(url, { getUrl: true });
 			} else {
@@ -55,7 +63,7 @@ app.get("/search", async (req, res) => {
 				// "https://manifest.googlevideo.com/api/manifest/hls_playlist/expire/1622143964/ei/fJ-vYNONCc3sW_uNtIgD/ip/105.162.25.171/id/nA9UZF-SZoQ.3/itag/300/source/yt_live_broadcast/requiressl/yes/ratebypass/yes/live/1/sgoap/gir%3Dyes%3Bitag%3D140/sgovp/gir%3Dyes%3Bitag%3D298/hls_chunk_host/r3---sn-n545gpjvh-ocvz.googlevideo.com/playlist_duration/30/manifest_duration/30/vprv/1/playlist_type/DVR/initcwndbps/2970/mh/j6/mm/44/mn/sn-n545gpjvh-ocvz/ms/lva/mv/m/mvi/3/pl/21/dover/11/keepalive/yes/fexp/24001373,24007246/mt/1622122110/sparams/expire,ei,ip,id,itag,source,requiressl,ratebypass,live,sgoap,sgovp,playlist_duration,manifest_duration,vprv,playlist_type/sig/AOq0QJ8wRAIgM1YeWpumdT3Gg8zUyu_bxtw8c8trY_mtsPAVRzCMGBQCIDT2nfSs6_rLqyjZu_X1zEYsc72b1E_j5Fq63bLcYX0o/lsparams/hls_chunk_host,initcwndbps,mh,mm,mn,ms,mv,mvi,pl/lsig/AG3C_xAwRgIhAJ_6z8P35MAf_t2ImJwI-G1j3oQZU4O-Dlg6WtHpRTKIAiEAoeh2MjPg1X513CkjdNwBk5D8TWCEJ7Uk4gxa0E4r_F0%3D/playlist/index.m3u8";
 			}
 			message_text = "";
-			if (req.query.url.includes("youtube")) {
+			if (url.includes("youtu")) {
 				var start = m3ulink.indexOf("expire/");
 				var ei = m3ulink.indexOf("/ei");
 				var epoch = Number(m3ulink.substring(start, ei).split("/")[1]);
@@ -68,7 +76,7 @@ app.get("/search", async (req, res) => {
 				results: "true",
 				message: message_text,
 				m3ulink: m3ulink,
-				sourcelink: req.query.url,
+				sourcelink: url,
 				expires: expires,
 				title: "home",
 				queries: "none",
@@ -111,11 +119,13 @@ app.get("/history", (req, res) => {
 	// }
 });
 app.get("/headless", async (req, res) => {
-	if (!req.query.url) {
+	const url = req.query.url
+	if (!url) {
 		res.status(400).send("no url provided");
+	} else if (url.includes("youtu")) {
+		res.status(500).send("Sorry, Youtube stream requests cannot be handled at the moment");
 	} else {
 		try {
-			url = req.query.url;
 			m3ulink = await ytde(url, { getUrl: true });
 			if (req.query.json == "true") {
 				res.json({ m3ulink: m3ulink });
