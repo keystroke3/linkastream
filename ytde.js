@@ -5,7 +5,6 @@ const fs = require("fs");
 const app = express();
 const dotenv = require("dotenv");
 const { reverse } = require("dns");
-const { url } = require("inspector");
 dotenv.config();
 const port = process.env.PORT;
 const env = process.env.NODE_ENV;
@@ -36,7 +35,7 @@ function countQueries() {
 }
 
 app.get("/search", async (req, res) => {
-	url = req.query.url;
+	const url = req.query.url;
 	if (!url) {
 		// res.send("No url provided");
 		res.render("index.ejs", {
