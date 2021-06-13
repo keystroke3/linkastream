@@ -77,11 +77,11 @@ async function Show(req, res, headless = false, json = false) {
 	data = await GET_ASYNC(req.query.url)
 	if (data){
 		data = JSON.parse(data)
+		console.log('using cached data')
 		search = ''
 	}else{
 		console.log('fetching new data')
 		search = await Search(req.query.url)
-        console.log(search)
         try{
         if (!search.fail){
 		data = search.data
