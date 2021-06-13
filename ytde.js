@@ -52,10 +52,9 @@ async function Search(url) {
 		};
 	} catch (err) {
 		if (!err.stderr){
-			console.log(err);
 			return { fail: 1, code: 0 };
 		}
-		if (err.stderr.includes("too many reqests")) {
+		if (err.stderr.includes("429")) {
 			return { fail: 1, code: 1 };
 		} else if (err.stderr.includes("Unsupported") || err.stderr.includes("not known")) {
 			return { fail: 1, code: 2 };
@@ -66,7 +65,10 @@ async function Search(url) {
 			return { fail: 1, code: 4 };
 		} else if (err.stderr.includes("offline")) {
 			return { fail: 1, code: 5 };
-		} 
+		} else {
+            console.log(err)
+            return {fail: 1, code:0}
+        } 
 
 	}
 }
@@ -79,7 +81,12 @@ async function Show(req, res, headless = false, json = false) {
 	}else{
 		console.log('fetching new data')
 		search = await Search(req.query.url)
+        console.log(search)
+        try{
+        if (!search.fail){
 		data = search.data
+        }} catch(err){
+        return res.status(500).send('unknown server error')}
 	}
 	if (!search.fail) {
 		if (headless) {
