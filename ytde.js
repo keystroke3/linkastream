@@ -8,8 +8,8 @@ const { promisify, isRegExp } = require("util");
 
 dotenv.config();
 const PORT = process.env.PORT;
-// const ENV = process.env.NODE_ENV;
-ENV = 'prod'
+const ENV = process.env.NODE_ENV;
+// ENV = 'prod'
 const REDIS_PORT = process.env.REDIS_PORT;
 const REDIS_EXP = process.env.REDIS_EXP;
 
@@ -53,7 +53,7 @@ async function Search(url, host) {
 			return { fail: 1, code: 0 };
 		}
 		if (err.stderr.includes("429")) {
-			const setTooMany = await SET_ASYNC(host, "true", "ex", REDIS_EXP);
+		const setTooMany = await SET_ASYNC(host, 'true', "ex", REDIS_EXP);
 			return { fail: 1, code: 1 };
 		} else if (err.stderr.includes("Unsupported") || err.stderr.includes("not known")) {
 			return { fail: 1, code: 2 };
@@ -121,6 +121,7 @@ function message(code) {
 
 async function Show(req, res, headless = false, json = false) {
 	url = req.query.url;
+	console.log(url)
 	host = extractHostname(url);
 	data = await GET_ASYNC(url);
 	tooMany = await GET_ASYNC(host);
@@ -129,9 +130,9 @@ async function Show(req, res, headless = false, json = false) {
 			data = JSON.parse(data);
 			console.log("using cached data");
 			search = "";
-		} else if (tooMany) {
-			error = { fail: 1, code: 1 };
-			throw error;
+		} else if(tooMany) {
+			error = {fail:1, code:1}
+			throw error
 		} else {
 			console.log("fetching new data");
 			search = await Search(url, host);
@@ -162,11 +163,11 @@ async function Show(req, res, headless = false, json = false) {
 				queries: "none",
 			});
 		} else {
-			throw search;
+			throw search
 		}
 	} catch (error) {
 		message_text = message(error.code);
-		console.log(message_text);
+		console.log(message_text)
 		if (headless) {
 			if (json) {
 				return res.status(400).json({ code: error.code, error: message_text });
