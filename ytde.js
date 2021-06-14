@@ -14,6 +14,7 @@ const REDIS_PORT = process.env.REDIS_PORT;
 const REDIS_EXP = process.env.REDIS_EXP;
 
 const redis = require("redis");
+const { stderr } = require("process");
 const client = redis.createClient({ host: "127.0.0.1", port: REDIS_PORT });
 
 const GET_ASYNC = promisify(client.get).bind(client);
@@ -55,7 +56,7 @@ async function Search(url, host) {
 		if (err.stderr.includes("429")) {
 		const setTooMany = await SET_ASYNC(host, 'true', "ex", REDIS_EXP);
 			return { fail: 1, code: 1 };
-		} else if (err.stderr.includes("Unsupported") || err.stderr.includes("not known") || 'valud URL') {
+		} else if (err.stderr.includes("Unsupported") || err.stderr.includes("not known") || err.stderr.includes('valud URL')) {
 			return { fail: 1, code: 2 };
 		} else if (err.stderr.includes("said")) {
 			message = err.stderr.split(":").slice(1).join();
