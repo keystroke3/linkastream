@@ -55,7 +55,7 @@ async function Search(url, host) {
 		if (err.stderr.includes("429")) {
 		const setTooMany = await SET_ASYNC(host, 'true', "ex", REDIS_EXP);
 			return { fail: 1, code: 1 };
-		} else if (err.stderr.includes("Unsupported") || err.stderr.includes("not known")) {
+		} else if (err.stderr.includes("Unsupported") || err.stderr.includes("not known") || 'valud URL') {
 			return { fail: 1, code: 2 };
 		} else if (err.stderr.includes("said")) {
 			message = err.stderr.split(":").slice(1).join();
@@ -102,7 +102,6 @@ function message(code) {
 		case 0:
 			return "Failed due to unknown error. Error has been logged";
 		case 1:
-			// const logTooMany = await SET_ASYNC('tooMany', 'youtube', "ex", 3600);
 			return "Too many requests. Please try again later";
 		case 2:
 			return "Invalid link or platform is unsupported. Please check the link or refer to Supported sites";
