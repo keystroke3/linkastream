@@ -64,7 +64,7 @@ async function Search(url, host) {
 			return { fail: 1, code: 4 };
 		} else if (err.stderr.includes("offline")) {
 			return { fail: 1, code: 5 };
-		} else if (err.stderr.includes("Not found")) {
+		} else if (err.stderr.includes("Not found") || err.stderr.includes('404')) {
 			return { fail: 1, code: 7 };
 		} else {
 			console.log(err);
