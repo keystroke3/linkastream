@@ -54,9 +54,9 @@ async function Search(url, host) {
 			return { fail: 1, code: 0 };
 		}
 		if (err.stderr.includes("429")) {
-		const setTooMany = await SET_ASYNC(host, 'true', "ex", REDIS_EXP);
+            const setTooMany = await SET_ASYNC(host, 'true', "ex", 600);
 			return { fail: 1, code: 1 };
-		} else if (err.stderr.includes("Unsupported") || err.stderr.includes("not known") || err.stderr.includes('valud URL')) {
+		} else if (err.stderr.includes("Unsupported") || err.stderr.includes("not known") || err.stderr.includes('valid URL')) {
 			return { fail: 1, code: 2 };
 		} else if (err.stderr.includes("said")) {
 			message = err.stderr.split(":").slice(1).join();
@@ -131,6 +131,7 @@ async function Show(req, res, headless = false, json = false) {
 			console.log("using cached data");
 			search = "";
 		} else if(tooMany) {
+            console.log('not making request')
 			error = {fail:1, code:1}
 			throw error
 		} else {
