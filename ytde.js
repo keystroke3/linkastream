@@ -8,8 +8,8 @@ const { promisify, isRegExp } = require("util");
 
 dotenv.config();
 const PORT = process.env.PORT;
-const ENV = process.env.NODE_ENV;
-// ENV = 'prod'
+// const ENV = process.env.NODE_ENV;
+ENV = 'prod'
 const REDIS_PORT = process.env.REDIS_PORT;
 const REDIS_EXP = process.env.REDIS_EXP;
 
@@ -23,7 +23,7 @@ app.use(express.static("public"));
 let m3ulink = "";
 app.set("view-engine", "ejs");
 
-async function Search(url) {
+async function Search(url, host) {
 	if (!url) {
 		return { fail: 1, code: 6 };
 	}
@@ -53,6 +53,7 @@ async function Search(url) {
 			return { fail: 1, code: 0 };
 		}
 		if (err.stderr.includes("429")) {
+			const setTooMany = await SET_ASYNC(host, "true", "ex", REDIS_EXP);
 			return { fail: 1, code: 1 };
 		} else if (err.stderr.includes("Unsupported") || err.stderr.includes("not known")) {
 			return { fail: 1, code: 2 };
@@ -63,7 +64,7 @@ async function Search(url) {
 			return { fail: 1, code: 4 };
 		} else if (err.stderr.includes("offline")) {
 			return { fail: 1, code: 5 };
-		} else if (err.stderr.includes("Not Found")) {
+		} else if (err.stderr.includes("Not found")) {
 			return { fail: 1, code: 7 };
 		} else {
 			console.log(err);
@@ -72,69 +73,103 @@ async function Search(url) {
 	}
 }
 
+function extractHostname(url, tld) {
+	let hostname;
+
+	//find & remove protocol (http, ftp, etc.) and get hostname
+	if (url.indexOf("://") > -1) {
+		hostname = url.split("/")[2];
+	} else {
+		hostname = url.split("/")[0];
+	}
+
+	//find & remove port number
+	hostname = hostname.split(":")[0];
+
+	//find & remove "?"
+	hostname = hostname.split("?")[0];
+
+	if (tld) {
+		let hostnames = hostname.split(".");
+		hostname = hostnames[hostnames.length - 2] + "." + hostnames[hostnames.length - 1];
+	}
+
+	return hostname;
+}
+
+function message(code) {
+	switch (code) {
+		case 0:
+			return "Failed due to unknown error. Error has been logged";
+		case 1:
+			// const logTooMany = await SET_ASYNC('tooMany', 'youtube', "ex", 3600);
+			return "Too many requests. Please try again later";
+		case 2:
+			return "Invalid link or platform is unsupported. Please check the link or refer to Supported sites";
+		case 3:
+			return data.message;
+		case 4:
+			return "Sorry, the stream is not available in the server region";
+		case 5:
+			return "The stream is offline";
+		case 6:
+			return "No url provided";
+		case 7:
+			return "Stream or channel does not exist";
+	}
+}
+
 async function Show(req, res, headless = false, json = false) {
 	url = req.query.url;
-	console.log(url)
+	host = extractHostname(url);
 	data = await GET_ASYNC(url);
-	if (data) {
-		data = JSON.parse(data);
-		console.log("using cached data");
-		search = "";
-	} else {
-		console.log("fetching new data");
-		search = await Search(url);
-		try {
-			if (!search.fail) {
-				data = search.data;
+	tooMany = await GET_ASYNC(host);
+	try {
+		if (data) {
+			data = JSON.parse(data);
+			console.log("using cached data");
+			search = "";
+		} else if (tooMany) {
+			error = { fail: 1, code: 1 };
+			throw error;
+		} else {
+			console.log("fetching new data");
+			search = await Search(url, host);
+			try {
+				if (!search.fail) {
+					data = search.data;
+				}
+			} catch (err) {
+				return res.status(500).send("unknown server error");
 			}
-		} catch (err) {
-			return res.status(500).send("unknown server error");
 		}
-	}
-	if (!search.fail) {
+		if (!search.fail) {
+			if (headless) {
+				if (json) {
+					return res.json({ m3ulink: data.m3ulink });
+				}
+				return res.redirect(302, data.m3ulink);
+			}
+
+			message_text = "";
+			res.render("index.ejs", {
+				results: "true",
+				message: message_text,
+				m3ulink: data.m3ulink,
+				sourcelink: url,
+				expires: data.expires,
+				title: "home",
+				queries: "none",
+			});
+		} else {
+			throw search;
+		}
+	} catch (error) {
+		message_text = message(error.code);
+		console.log(message_text);
 		if (headless) {
 			if (json) {
-				return res.json({ m3ulink: data.m3ulink });
-			}
-			return res.redirect(302, data.m3ulink);
-		}
-
-		message_text = "";
-		res.render("index.ejs", {
-			results: "true",
-			message: message_text,
-			m3ulink: data.m3ulink,
-			sourcelink: url,
-			expires: data.expires,
-			title: "home",
-			queries: "none",
-		});
-	} else {
-		function message() {
-			switch (search.code) {
-				case 0:
-					return "Failed due to unknown error. Error has been logged";
-				case 1:
-					return "Too many requests. Please try again later";
-				case 2:
-					return "Invalid link or platform is unsupported. Please check the link or refer to Supported sites";
-				case 3:
-					return data.message;
-				case 4:
-					return "Sorry, the stream is not available in the server region";
-				case 5:
-					return "The stream is offline";
-				case 6:
-					return "No url provided";
-				case 7:
-					return "Stream or channel does not exist";
-			}
-		}
-		message_text = message();
-
-		if (headless) {
-			if (json) {
-				return res.status(400).json({ code: search.code, error: message_text });
+				return res.status(400).json({ code: error.code, error: message_text });
 			}
 			return res.status(400).send(message_text);
 		}
