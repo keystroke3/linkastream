@@ -54,18 +54,25 @@ async function Search(url, host) {
 			return { fail: 1, code: 0 };
 		}
 		if (err.stderr.includes("429")) {
-            const setTooMany = await SET_ASYNC(host, 'true', "ex", 600);
+			const setTooMany = await SET_ASYNC(host, "true", "ex", 600);
 			return { fail: 1, code: 1 };
-		} else if (err.stderr.includes("Unsupported") || err.stderr.includes("not known") || err.stderr.includes('valid URL')) {
+		} else if (
+			err.stderr.includes("Unsupported") ||
+			err.stderr.includes("not known") ||
+			err.stderr.includes("valid URL")
+		) {
 			return { fail: 1, code: 2 };
 		} else if (err.stderr.includes("said")) {
 			message = err.stderr.split(":").slice(1).join();
 			return { fail: 1, code: 3, message: message };
 		} else if (err.stderr.includes("proxy")) {
+			const setGeoLocked = await SET_ASYNC(url, JSON.stringify({ code: 4 }));
 			return { fail: 1, code: 4 };
 		} else if (err.stderr.includes("offline")) {
+			const setOfflin = await SET_ASYNC(url, JSON.stringify({ code: 5 }, "EX", 900));
 			return { fail: 1, code: 5 };
-		} else if (err.stderr.includes("Not found") || err.stderr.includes('404')) {
+		} else if (err.stderr.includes("Not found") || err.stderr.includes("404")) {
+			const setNotFound = await SET_ASYNC(url, JSON.stringify({ code: 7 }));
 			return { fail: 1, code: 7 };
 		} else {
 			console.log(err);
@@ -121,19 +128,23 @@ function message(code) {
 
 async function Show(req, res, headless = false, json = false) {
 	url = req.query.url;
-	console.log(url)
+	console.log(url);
 	host = extractHostname(url);
 	data = await GET_ASYNC(url);
 	tooMany = await GET_ASYNC(host);
 	try {
 		if (data) {
 			data = JSON.parse(data);
-			console.log("using cached data");
-			search = "";
-		} else if(tooMany) {
-            console.log('not making request')
-			error = {fail:1, code:1}
-			throw error
+			if (!data.code) {
+				console.log("using cached data");
+				search = "";
+			} else {
+				throw { code: data.code };
+			}
+			// } else if(tooMany) {
+			//     console.log('not making request')
+			// 	error = {fail:1, code:1}
+			// 	throw error
 		} else {
 			console.log("fetching new data");
 			search = await Search(url, host);
@@ -164,11 +175,11 @@ async function Show(req, res, headless = false, json = false) {
 				queries: "none",
 			});
 		} else {
-			throw search
+			throw search;
 		}
 	} catch (error) {
 		message_text = message(error.code);
-		console.log(message_text)
+		console.log(message_text);
 		if (headless) {
 			if (json) {
 				return res.status(400).json({ code: error.code, error: message_text });
