@@ -65,6 +65,8 @@ async function Search(url) {
 			return { fail: 1, code: 4 };
 		} else if (err.stderr.includes("offline")) {
 			return { fail: 1, code: 5 };
+		} else if (err.stderr.includes("Not Found")) {
+			return { fail: 1, code: 7 };
 		} else {
             console.log(err)
             return {fail: 1, code:0}
@@ -77,10 +79,10 @@ async function Show(req, res, headless = false, json = false) {
 	data = await GET_ASYNC(req.query.url)
 	if (data){
 		data = JSON.parse(data)
-		console.log('using cached data')
+		console.log('using cached data', req.query.url )
 		search = ''
 	}else{
-		console.log('fetching new data')
+		console.log('fetching new data', req.query.url)
 		search = await Search(req.query.url)
         try{
         if (!search.fail){
@@ -124,6 +126,8 @@ async function Show(req, res, headless = false, json = false) {
 					return "The stream is offline";
 				case 6:
 					return "No url provided";
+				case 7:
+					return "Stream or channel does not exist";
 			}
 		}
 		message_text = message();
