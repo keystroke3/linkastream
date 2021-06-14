@@ -4,8 +4,7 @@ const ytde = require("youtube-dl-exec");
 const fs = require("fs");
 const app = express();
 const dotenv = require("dotenv");
-const {promisify, isRegExp} = require('util')
-
+const { promisify, isRegExp } = require("util");
 
 dotenv.config();
 const PORT = process.env.PORT;
@@ -14,16 +13,15 @@ const ENV = process.env.NODE_ENV;
 const REDIS_PORT = process.env.REDIS_PORT;
 const REDIS_EXP = process.env.REDIS_EXP;
 
-const redis = require('redis')
-const client = redis.createClient({host:'127.0.0.1', port:REDIS_PORT })
+const redis = require("redis");
+const client = redis.createClient({ host: "127.0.0.1", port: REDIS_PORT });
 
-const GET_ASYNC	= promisify(client.get).bind(client)
-const SET_ASYNC	= promisify(client.set).bind(client)
+const GET_ASYNC = promisify(client.get).bind(client);
+const SET_ASYNC = promisify(client.set).bind(client);
 
 app.use(express.static("public"));
 let m3ulink = "";
 app.set("view-engine", "ejs");
-
 
 async function Search(url) {
 	if (!url) {
@@ -42,16 +40,16 @@ async function Search(url) {
 			epoch = Number(m3ulink.substring(start, ei).split("/")[1]);
 			expires = new Date(epoch * 1000);
 		} else {
-			expires = 'none'
+			expires = "none";
 		}
-		data = {m3ulink:m3ulink, expires:expires.toString()}
-		const saveSearch = await SET_ASYNC(url, JSON.stringify(data), 'ex',REDIS_EXP)
+		data = { m3ulink: m3ulink, expires: expires.toString() };
+		const saveSearch = await SET_ASYNC(url, JSON.stringify(data), "ex", REDIS_EXP);
 		return {
 			fail: 0,
-			data:data
+			data: data,
 		};
 	} catch (err) {
-		if (!err.stderr){
+		if (!err.stderr) {
 			return { fail: 1, code: 0 };
 		}
 		if (err.stderr.includes("429")) {
@@ -68,27 +66,30 @@ async function Search(url) {
 		} else if (err.stderr.includes("Not Found")) {
 			return { fail: 1, code: 7 };
 		} else {
-            console.log(err)
-            return {fail: 1, code:0}
-        } 
-
+			console.log(err);
+			return { fail: 1, code: 0 };
+		}
 	}
 }
 
 async function Show(req, res, headless = false, json = false) {
-	data = await GET_ASYNC(req.query.url)
-	if (data){
-		data = JSON.parse(data)
-		console.log('using cached data', req.query.url )
-		search = ''
-	}else{
-		console.log('fetching new data', req.query.url)
-		search = await Search(req.query.url)
-        try{
-        if (!search.fail){
-		data = search.data
-        }} catch(err){
-        return res.status(500).send('unknown server error')}
+	url = req.query.url;
+	console.log(url)
+	data = await GET_ASYNC(url);
+	if (data) {
+		data = JSON.parse(data);
+		console.log("using cached data");
+		search = "";
+	} else {
+		console.log("fetching new data");
+		search = await Search(url);
+		try {
+			if (!search.fail) {
+				data = search.data;
+			}
+		} catch (err) {
+			return res.status(500).send("unknown server error");
+		}
 	}
 	if (!search.fail) {
 		if (headless) {
@@ -98,7 +99,6 @@ async function Show(req, res, headless = false, json = false) {
 			return res.redirect(302, data.m3ulink);
 		}
 
-		url = req.query.url;
 		message_text = "";
 		res.render("index.ejs", {
 			results: "true",
@@ -201,7 +201,7 @@ app.get("/iptv-query", (req, res) => {
 
 app.use(function (req, res, next) {
 	// res.status(404).render("404.ejs", { title: "404" });
-	return res.status(404)
+	return res.status(404);
 });
 
 app.listen(PORT);
