@@ -64,7 +64,9 @@ async function Search(url, host) {
 			return { fail: 1, code: 2 };
 		} else if (err.stderr.includes("said")) {
 			message = err.stderr.split(":").slice(1).join();
-			return { fail: 1, code: 3, message: message };
+			data =  { fail: 1, code: 3, message: message };
+			const setSaid = await SET_ASYNC(url, JSON.stringify(data), "EX", 900);
+            return data;
 		} else if (err.stderr.includes("proxy")) {
 			const setGeoLocked = await SET_ASYNC(url, JSON.stringify({ code: 4 }));
 			return { fail: 1, code: 4 };
@@ -114,7 +116,7 @@ function message(code) {
 		case 2:
 			return "Invalid link or platform is unsupported. Please check the link or refer to Supported sites";
 		case 3:
-			return data.message;
+			return code.message;
 		case 4:
 			return "Sorry, the stream is not available in the server region";
 		case 5:
