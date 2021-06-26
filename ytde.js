@@ -70,7 +70,8 @@ async function Search(url, host) {
 		} else if (err.stderr.includes("proxy")) {
 			const setGeoLocked = await SET_ASYNC(url, JSON.stringify({ code: 4 }));
 			return { fail: 1, code: 4 };
-		} else if (err.stderr.includes("offline")) {
+		} else if (err.stderr.includes("offline") ||
+            err.stderr.includes("a few moments")) {
 			const setOfflin = await SET_ASYNC(url, JSON.stringify({ code: 5 }, "EX", 900));
 			return { fail: 1, code: 5 };
 		} else if (err.stderr.includes("Not found") || err.stderr.includes("404")) {
