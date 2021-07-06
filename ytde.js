@@ -3,6 +3,7 @@ const express = require("express");
 const ytde = require("youtube-dl-exec");
 const fs = require("fs");
 const app = express();
+const path = require("path")
 const dotenv = require("dotenv");
 const { promisify, isRegExp } = require("util");
 
@@ -248,6 +249,16 @@ app.get("/history", (req, res) => {
 
 app.get("/iptv-query", (req, res) => {
 	res.send("use /headless?url=url");
+});
+
+app.get("/ads.txt", (req, res) => {
+	fs.readFile('public/ads.txt', 'uft8', (err, data) => {
+		if (err) {
+			console.error(err)
+			res.send(500)
+		}
+		res.send(data)
+	})
 });
 
 app.use(function (req, res, next) {
