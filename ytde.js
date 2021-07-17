@@ -3,14 +3,14 @@ const express = require("express");
 const ytde = require("youtube-dl-exec");
 const fs = require("fs");
 const app = express();
-const path = require("path")
+const path = require("path");
 const dotenv = require("dotenv");
 const { promisify, isRegExp } = require("util");
 
 dotenv.config();
 const PORT = process.env.PORT;
-const ENV = process.env.NODE_ENV;
-// ENV = 'prod'
+// const ENV = process.env.NODE_ENV;
+ENV = "prod";
 const REDIS_PORT = process.env.REDIS_PORT;
 const REDIS_EXP = process.env.REDIS_EXP;
 
@@ -36,7 +36,7 @@ async function Search(url, host) {
 			m3ulink =
 				"https://manifest.googlevideo.com/api/manifest/hls_playlist/expire/1623553182/ei/PiDFYKedE-WcmLAPud6cqAs/ip/105.162.21.192/id/lu_BJKxqGnk.1/itag/96/source/yt_live_broadcast/requiressl/yes/ratebypass/yes/live/1/sgoap/gir%3Dyes%3Bitag%3D140/sgovp/gir%3Dyes%3Bitag%3D137/hls_chunk_host/r5---sn-n545gpjvh-ocvz.googlevideo.com/playlist_duration/30/manifest_duration/30/vprv/1/playlist_type/DVR/initcwndbps/3300/mh/Fr/mm/44/mn/sn-n545gpjvh-ocvz/ms/lva/mv/m/mvi/5/pl/22/dover/11/keepalive/yes/fexp/24001373,24007246/beids/9466587/mt/1623531385/sparams/expire,ei,ip,id,itag,source,requiressl,ratebypass,live,sgoap,sgovp,playlist_duration,manifest_duration,vprv,playlist_type/sig/AOq0QJ8wRQIhAKRH2vqtKkmUYYake7AWr35pFV3CZ4j_VEm2s54bD1G0AiAXBNmFfD_UgBuh1S4GXKN6kJQD8vA69zrP1yAQl08GRA%3D%3D/lsparams/hls_chunk_host,initcwndbps,mh,mm,mn,ms,mv,mvi,pl/lsig/AG3C_xAwRQIgeFLAKRN-amvz6eSrwdhiqw2jMRqclLn6xXkABsPsfckCIQC7BGGBp0kS3v5qV31yMSVJlKJFr_QiEBZv2y3ygtyxrw%3D%3D/playlist/index.m3u8";
 		}
-		if (url && url.includes("youtu")) {
+		if (url && url.includes("youtu") && !url.includes("m.you")) {
 			var start = m3ulink.indexOf("expire/");
 			var ei = m3ulink.indexOf("/ei");
 			epoch = Number(m3ulink.substring(start, ei).split("/")[1]);
@@ -51,6 +51,7 @@ async function Search(url, host) {
 			data: data,
 		};
 	} catch (err) {
+		console.error("Problem url \n" + url);
 		if (!err.stderr) {
 			return { fail: 1, code: 0 };
 		}
@@ -62,17 +63,17 @@ async function Search(url, host) {
 			err.stderr.includes("not known") ||
 			err.stderr.includes("valid URL")
 		) {
+			console.error("Unknown url", url);
 			return { fail: 1, code: 2 };
 		} else if (err.stderr.includes("said")) {
 			message = err.stderr.split(":").slice(1).join();
-			data =  { fail: 1, code: 3, message: message };
+			data = { fail: 1, code: 3, message: message };
 			const setSaid = await SET_ASYNC(url, JSON.stringify(data), "EX", 900);
-            return data;
+			return data;
 		} else if (err.stderr.includes("proxy")) {
 			const setGeoLocked = await SET_ASYNC(url, JSON.stringify({ code: 4 }));
 			return { fail: 1, code: 4 };
-		} else if (err.stderr.includes("offline") ||
-            err.stderr.includes("a few moments")) {
+		} else if (err.stderr.includes("offline") || err.stderr.includes("a few moments")) {
 			const setOfflin = await SET_ASYNC(url, JSON.stringify({ code: 5 }, "EX", 900));
 			return { fail: 1, code: 5 };
 		} else if (err.stderr.includes("Not found") || err.stderr.includes("404")) {
@@ -179,6 +180,7 @@ async function Show(req, res, headless = false, json = false) {
 				queries: "none",
 			});
 		} else {
+			console.error(search);
 			throw search;
 		}
 	} catch (error) {
@@ -252,13 +254,13 @@ app.get("/iptv-query", (req, res) => {
 });
 
 app.get("/ads.txt", (req, res) => {
-	fs.readFile('public/ads.txt', 'uft8', (err, data) => {
+	fs.readFile("public/ads.txt", "uft8", (err, data) => {
 		if (err) {
-			console.error(err)
-			res.send(500)
+			console.error(err);
+			res.send(500);
 		}
-		res.send(data)
-	})
+		res.send(data);
+	});
 });
 
 app.use(function (req, res, next) {

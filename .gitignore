@@ -7,3 +7,5 @@ test-ytde.js
 *.rdb
 *.http
 *.sh
+yt-dlp
+archives/
