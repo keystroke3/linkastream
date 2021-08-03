@@ -211,6 +211,15 @@ if (SERVICE_DOWN === true) {
 			title: "Service Down",
 		});
 	});
+	app.get("/search", async (req, res) => {
+		res.render("503.ejs", {
+			title: "Service Down",
+		});
+	});
+
+	app.get("/headless", async (req, res) => {
+		res.send("Service down for maintainance. We will be back soon");
+	});
 } else {
 	app.get("/", (req, res) => {
 		message_text = "";
@@ -222,16 +231,16 @@ if (SERVICE_DOWN === true) {
 			queries: "none",
 		});
 	});
+	app.get("/search", async (req, res) => {
+		Show(req, res);
+	});
+
+	app.get("/headless", async (req, res) => {
+		req.query.json ? (json = true) : (json = false);
+		Show(req, res, (headless = true), (json = json));
+	});
 }
 
-app.get("/search", async (req, res) => {
-	Show(req, res);
-});
-
-app.get("/headless", async (req, res) => {
-	req.query.json ? (json = true) : (json = false);
-	Show(req, res, (headless = true), (json = json));
-});
 app.get("/supported", (req, res) => {
 	const readFileLines = (filename) => fs.readFileSync(filename).toString("UTF8").split("\n");
 	let arr = readFileLines("ytd-list");
