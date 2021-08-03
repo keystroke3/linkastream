@@ -13,9 +13,9 @@ const PORT = process.env.PORT;
 ENV = "prod";
 const REDIS_PORT = process.env.REDIS_PORT;
 const REDIS_EXP = process.env.REDIS_EXP;
-
+const SERVICE_DOWN = process.env.SERVICE_DOWN;
 const redis = require("redis");
-const { stderr } = require("process");
+const { stderr, title } = require("process");
 const client = redis.createClient({ host: "127.0.0.1", port: REDIS_PORT });
 
 const GET_ASYNC = promisify(client.get).bind(client);
@@ -29,10 +29,10 @@ async function Search(url, host) {
 	if (!url) {
 		return { fail: 1, code: 6 };
 	}
-    if (url.includes(".m3u") || url.includes("googlevideo")){
-        console.error(`DENIED:\n + ${url}`)
-        return { fail: 1, code: 2};
-    }
+	if (url.includes(".m3u") || url.includes("googlevideo")) {
+		console.error(`DENIED:\n + ${url}`);
+		return { fail: 1, code: 2 };
+	}
 	try {
 		if (ENV == "prod") {
 			m3ulink = await ytde(url, { getUrl: true });
@@ -56,15 +56,13 @@ async function Search(url, host) {
 		};
 	} catch (err) {
 		console.error(new Date() + "Problem url \n" + url);
-        console.error(err)
+		console.error(err);
 		if (!err.stderr) {
 			return { fail: 1, code: 0 };
-		}
-		else if (err.stderr.includes("proxy")) {
+		} else if (err.stderr.includes("proxy")) {
 			const setGeoLocked = await SET_ASYNC(url, JSON.stringify({ code: 4 }));
 			return { fail: 1, code: 4 };
-        }
-		else if (err.stderr.includes("429")) {
+		} else if (err.stderr.includes("429")) {
 			const setTooMany = await SET_ASYNC(host, "true", "ex", 600);
 			return { fail: 1, code: 1 };
 		} else if (
@@ -146,17 +144,14 @@ async function Show(req, res, headless = false, json = false) {
 			if (!data.code) {
 				console.log("using cached data");
 				search = "";
-			}
-			  else if(tooMany) {
-                console.error(`${new Date()}STALLING: too many requests for ${host}`)
-                console.error(`STALLING: ${url}`)
-			 	error = {fail:1, code:1}
-			 	throw error
-            }
-			 else {
+			} else if (tooMany) {
+				console.error(`${new Date()}STALLING: too many requests for ${host}`);
+				console.error(`STALLING: ${url}`);
+				error = { fail: 1, code: 1 };
+				throw error;
+			} else {
 				throw { code: data.code };
-            }
-            
+			}
 		} else {
 			console.log("fetching new data");
 			search = await Search(url, host);
@@ -190,9 +185,9 @@ async function Show(req, res, headless = false, json = false) {
 			throw search;
 		}
 	} catch (error) {
-        console.log(error)
+		console.log(error);
 		message_text = message(error.code);
-		console.error(new Date() + "\n" + url + "\n"+ message_text);
+		console.error(new Date() + "\n" + url + "\n" + message_text);
 		if (headless) {
 			if (json) {
 				return res.status(400).json({ code: error.code, error: message_text });
@@ -210,16 +205,24 @@ async function Show(req, res, headless = false, json = false) {
 	}
 }
 
-app.get("/", (req, res) => {
-	message_text = "";
-	res.render("index.ejs", {
-		results: "false",
-		message: message_text,
-		expires: "none",
-		title: "home",
-		queries: "none",
+if (SERVICE_DOWN) {
+	app.get("/", (req, res) => {
+		res.render("503.ejs", {
+			title: "Service Down",
+		});
 	});
-});
+} else {
+	app.get("/", (req, res) => {
+		message_text = "";
+		res.render("index.ejs", {
+			results: "false",
+			message: message_text,
+			expires: "none",
+			title: "home",
+			queries: "none",
+		});
+	});
+}
 
 app.get("/search", async (req, res) => {
 	Show(req, res);
