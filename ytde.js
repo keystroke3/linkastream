@@ -14,6 +14,7 @@ ENV = "prod";
 const REDIS_PORT = process.env.REDIS_PORT;
 const REDIS_EXP = process.env.REDIS_EXP;
 const SERVICE_DOWN = process.env.SERVICE_DOWN;
+console.log(SERVICE_DOWN);
 const redis = require("redis");
 const { stderr, title } = require("process");
 const client = redis.createClient({ host: "127.0.0.1", port: REDIS_PORT });
@@ -205,7 +206,7 @@ async function Show(req, res, headless = false, json = false) {
 	}
 }
 
-if (SERVICE_DOWN === true) {
+if (SERVICE_DOWN === "true") {
 	app.get("/", (req, res) => {
 		res.render("503.ejs", {
 			title: "Service Down",
