@@ -29,6 +29,10 @@ async function Search(url, host) {
 	if (!url) {
 		return { fail: 1, code: 6 };
 	}
+    if (url.includes(".m3u") || url.includes("googlevideo")){
+        console.error(`DENIED:\n + ${url}`)
+        return { fail: 1, code: 2};
+    }
 	try {
 		if (ENV == "prod") {
 			m3ulink = await ytde(url, { getUrl: true });
@@ -51,11 +55,16 @@ async function Search(url, host) {
 			data: data,
 		};
 	} catch (err) {
-		console.error("Problem url \n" + url);
+		console.error(new Date() + "Problem url \n" + url);
+        console.error(err)
 		if (!err.stderr) {
 			return { fail: 1, code: 0 };
 		}
-		if (err.stderr.includes("429")) {
+		else if (err.stderr.includes("proxy")) {
+			const setGeoLocked = await SET_ASYNC(url, JSON.stringify({ code: 4 }));
+			return { fail: 1, code: 4 };
+        }
+		else if (err.stderr.includes("429")) {
 			const setTooMany = await SET_ASYNC(host, "true", "ex", 600);
 			return { fail: 1, code: 1 };
 		} else if (
@@ -63,16 +72,12 @@ async function Search(url, host) {
 			err.stderr.includes("not known") ||
 			err.stderr.includes("valid URL")
 		) {
-			console.error("Unknown url", url);
 			return { fail: 1, code: 2 };
 		} else if (err.stderr.includes("said")) {
 			message = err.stderr.split(":").slice(1).join();
 			data = { fail: 1, code: 3, message: message };
 			const setSaid = await SET_ASYNC(url, JSON.stringify(data), "EX", 900);
 			return data;
-		} else if (err.stderr.includes("proxy")) {
-			const setGeoLocked = await SET_ASYNC(url, JSON.stringify({ code: 4 }));
-			return { fail: 1, code: 4 };
 		} else if (err.stderr.includes("offline") || err.stderr.includes("a few moments")) {
 			const setOfflin = await SET_ASYNC(url, JSON.stringify({ code: 5 }, "EX", 900));
 			return { fail: 1, code: 5 };
@@ -80,7 +85,6 @@ async function Search(url, host) {
 			const setNotFound = await SET_ASYNC(url, JSON.stringify({ code: 7 }));
 			return { fail: 1, code: 7 };
 		} else {
-			console.log(err);
 			return { fail: 1, code: 0 };
 		}
 	}
@@ -133,7 +137,6 @@ function message(code) {
 
 async function Show(req, res, headless = false, json = false) {
 	url = req.query.url;
-	console.log(url);
 	host = extractHostname(url);
 	data = await GET_ASYNC(url);
 	tooMany = await GET_ASYNC(host);
@@ -143,13 +146,17 @@ async function Show(req, res, headless = false, json = false) {
 			if (!data.code) {
 				console.log("using cached data");
 				search = "";
-			} else {
-				throw { code: data.code };
 			}
-			// } else if(tooMany) {
-			//     console.log('not making request')
-			// 	error = {fail:1, code:1}
-			// 	throw error
+			  else if(tooMany) {
+                console.error(`${new Date()}STALLING: too many requests for ${host}`)
+                console.error(`STALLING: ${url}`)
+			 	error = {fail:1, code:1}
+			 	throw error
+            }
+			 else {
+				throw { code: data.code };
+            }
+            
 		} else {
 			console.log("fetching new data");
 			search = await Search(url, host);
@@ -180,12 +187,12 @@ async function Show(req, res, headless = false, json = false) {
 				queries: "none",
 			});
 		} else {
-			console.error(search);
 			throw search;
 		}
 	} catch (error) {
+        console.log(error)
 		message_text = message(error.code);
-		console.log(message_text);
+		console.error(new Date() + "\n" + url + "\n"+ message_text);
 		if (headless) {
 			if (json) {
 				return res.status(400).json({ code: error.code, error: message_text });
