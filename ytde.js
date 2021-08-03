@@ -205,7 +205,7 @@ async function Show(req, res, headless = false, json = false) {
 	}
 }
 
-if (SERVICE_DOWN) {
+if (SERVICE_DOWN === true) {
 	app.get("/", (req, res) => {
 		res.render("503.ejs", {
 			title: "Service Down",
