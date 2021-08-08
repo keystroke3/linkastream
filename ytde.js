@@ -42,11 +42,12 @@ async function Search(url, host) {
 				fetch = await axios.get(queryUrl);
 				m3ulink = Object.values(fetch.data)[0];
 			} catch (e) {
-				error = e.response.data;
-				if (error.includes("Internal")) {
-					console.log("trying youtube-dl");
-					m3ulink = await ytde(url, { getUrl: true });
-				}
+				throw "Streamlink Error";
+				// error = e.response.data;
+				// if (error.includes("Internal")) {
+				// 	console.log("trying youtube-dl");
+				// 	m3ulink = await ytde(url, { getUrl: true });
+				// }
 			}
 		} else {
 			m3ulink =
@@ -69,7 +70,9 @@ async function Search(url, host) {
 	} catch (err) {
 		console.error(new Date() + "Problem url \n" + url);
 		console.error(err);
-		if (!err.stderr) {
+		if (err === "Streamlink Error") {
+			return { fail: 1, code: 8 };
+		} else if (!err.stderr) {
 			return { fail: 1, code: 0 };
 		} else if (err.stderr.includes("proxy")) {
 			const setGeoLocked = await SET_ASYNC(url, JSON.stringify({ code: 4 }));
@@ -127,7 +130,7 @@ function extractHostname(url, tld) {
 function message(code) {
 	switch (code) {
 		case 0:
-			return "Failed due to unknown error. Error has been logged";
+			return "Could not get get link due to server error";
 		case 1:
 			return "Too many requests. Please try again later";
 		case 2:
@@ -142,6 +145,8 @@ function message(code) {
 			return "No url provided";
 		case 7:
 			return "Stream or channel does not exist";
+		case 8:
+			return "Could not get a link Either the stream is down or the link is incorrect";
 	}
 }
 
