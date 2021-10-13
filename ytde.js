@@ -1,6 +1,5 @@
 // const http = require('http')
 const express = require("express");
-const axios = require("axios");
 const ytde = require("youtube-dl-exec");
 const fs = require("fs");
 const app = express();
@@ -10,11 +9,12 @@ const { promisify, isRegExp } = require("util");
 
 dotenv.config();
 const PORT = process.env.PORT;
-const S_HOST = process.env.S_HOST;
-const ENV = process.env.NODE_ENV;
+// const ENV = process.env.NODE_ENV;
+ENV = "prod";
 const REDIS_PORT = process.env.REDIS_PORT;
 const REDIS_EXP = process.env.REDIS_EXP;
 const SERVICE_DOWN = process.env.SERVICE_DOWN;
+const NEED_PAY = process.env.NEED_PAY;
 const redis = require("redis");
 const { stderr, title } = require("process");
 const client = redis.createClient({ host: "127.0.0.1", port: REDIS_PORT });
@@ -35,20 +35,8 @@ async function Search(url, host) {
 		return { fail: 1, code: 2 };
 	}
 	try {
-		const queryUrl = `${S_HOST}?streaming-ip=${url}`;
-		if (ENV === "prod") {
-			try {
-				console.log("trying streamlink");
-				fetch = await axios.get(queryUrl);
-				m3ulink = Object.values(fetch.data)[0];
-			} catch (e) {
-				throw "Streamlink Error";
-				// error = e.response.data;
-				// if (error.includes("Internal")) {
-				// 	console.log("trying youtube-dl");
-				// 	m3ulink = await ytde(url, { getUrl: true });
-				// }
-			}
+		if (ENV == "prod") {
+			m3ulink = await ytde(url, { getUrl: true });
 		} else {
 			m3ulink =
 				"https://manifest.googlevideo.com/api/manifest/hls_playlist/expire/1623553182/ei/PiDFYKedE-WcmLAPud6cqAs/ip/105.162.21.192/id/lu_BJKxqGnk.1/itag/96/source/yt_live_broadcast/requiressl/yes/ratebypass/yes/live/1/sgoap/gir%3Dyes%3Bitag%3D140/sgovp/gir%3Dyes%3Bitag%3D137/hls_chunk_host/r5---sn-n545gpjvh-ocvz.googlevideo.com/playlist_duration/30/manifest_duration/30/vprv/1/playlist_type/DVR/initcwndbps/3300/mh/Fr/mm/44/mn/sn-n545gpjvh-ocvz/ms/lva/mv/m/mvi/5/pl/22/dover/11/keepalive/yes/fexp/24001373,24007246/beids/9466587/mt/1623531385/sparams/expire,ei,ip,id,itag,source,requiressl,ratebypass,live,sgoap,sgovp,playlist_duration,manifest_duration,vprv,playlist_type/sig/AOq0QJ8wRQIhAKRH2vqtKkmUYYake7AWr35pFV3CZ4j_VEm2s54bD1G0AiAXBNmFfD_UgBuh1S4GXKN6kJQD8vA69zrP1yAQl08GRA%3D%3D/lsparams/hls_chunk_host,initcwndbps,mh,mm,mn,ms,mv,mvi,pl/lsig/AG3C_xAwRQIgeFLAKRN-amvz6eSrwdhiqw2jMRqclLn6xXkABsPsfckCIQC7BGGBp0kS3v5qV31yMSVJlKJFr_QiEBZv2y3ygtyxrw%3D%3D/playlist/index.m3u8";
@@ -70,9 +58,7 @@ async function Search(url, host) {
 	} catch (err) {
 		console.error(new Date() + "Problem url \n" + url);
 		console.error(err);
-		if (err === "Streamlink Error") {
-			return { fail: 1, code: 8 };
-		} else if (!err.stderr) {
+		if (!err.stderr) {
 			return { fail: 1, code: 0 };
 		} else if (err.stderr.includes("proxy")) {
 			const setGeoLocked = await SET_ASYNC(url, JSON.stringify({ code: 4 }));
@@ -130,7 +116,7 @@ function extractHostname(url, tld) {
 function message(code) {
 	switch (code) {
 		case 0:
-			return "Could not get get link due to server error";
+			return "Failed due to unknown error. Error has been logged";
 		case 1:
 			return "Too many requests. Please try again later";
 		case 2:
@@ -145,8 +131,6 @@ function message(code) {
 			return "No url provided";
 		case 7:
 			return "Stream or channel does not exist";
-		case 8:
-			return "Could not get a link Either the stream is down or the link is incorrect";
 	}
 }
 
@@ -222,15 +206,33 @@ async function Show(req, res, headless = false, json = false) {
 	}
 }
 
-if (SERVICE_DOWN === "true") {
+if (NEED_PAY === "true") {
+	app.get("/", (req, res) => {
+		res.render("503.ejs", {
+			title: "Payment Required",
+			message: "Your subscription has ended. Please make a payment to continue using this service",
+		});
+	});
+	app.get("/search", async (req, res) => {
+		res.render("503.ejs", {
+			title: "Payment Required",
+			message: "Your subscription has ended. Please make a payment to continue using this service",
+		});
+	});
+	app.get("/headless", async (req, res) => {
+		res.send("Your subscription has ended. Please make a payment to continue using this service");
+	});
+} else if (SERVICE_DOWN === "true") {
 	app.get("/", (req, res) => {
 		res.render("503.ejs", {
 			title: "Service Down",
+			message: "Service is currently down for maintainance. We will be back soon.",
 		});
 	});
 	app.get("/search", async (req, res) => {
 		res.render("503.ejs", {
 			title: "Service Down",
+			message: "Service is currently down for maintainance. We will be back soon.",
 		});
 	});
 
@@ -258,10 +260,6 @@ if (SERVICE_DOWN === "true") {
 	});
 }
 
-app.get("/streamlink", async (req, res) => {
-	req.query.json ? (json = true) : (json = false);
-	Show(req, res, (headless = true), (json = json));
-});
 app.get("/supported", (req, res) => {
 	const readFileLines = (filename) => fs.readFileSync(filename).toString("UTF8").split("\n");
 	let arr = readFileLines("ytd-list");
@@ -291,16 +289,6 @@ app.get("/history", (req, res) => {
 
 app.get("/iptv-query", (req, res) => {
 	res.send("use /headless?url=url");
-});
-
-app.get("/ads.txt", (req, res) => {
-	fs.readFile("public/ads.txt", "uft8", (err, data) => {
-		if (err) {
-			console.error(err);
-			res.send(500);
-		}
-		res.send(data);
-	});
 });
 
 app.use(function (req, res, next) {
