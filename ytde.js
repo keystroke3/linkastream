@@ -14,6 +14,7 @@ ENV = "prod";
 const REDIS_PORT = process.env.REDIS_PORT;
 const REDIS_EXP = process.env.REDIS_EXP;
 const SERVICE_DOWN = process.env.SERVICE_DOWN;
+const HEADLESS_DOWN = process.env.HEADLESS_DOWN;
 const NEED_PAY = process.env.NEED_PAY;
 const redis = require("redis");
 const { stderr, title } = require("process");
@@ -253,11 +254,16 @@ if (NEED_PAY === "true") {
 	app.get("/search", async (req, res) => {
 		Show(req, res);
 	});
-
-	app.get("/headless", async (req, res) => {
-		req.query.json ? (json = true) : (json = false);
-		Show(req, res, (headless = true), (json = json));
-	});
+	if (HEADLESS_DOWN === "true") {
+		app.get("/headless", async (req, res) => {
+			res.send("API is down until further notice. I am working on making improvements");
+		});
+	} else {
+		app.get("/headless", async (req, res) => {
+			req.query.json ? (json = true) : (json = false);
+			Show(req, res, (headless = true), (json = json));
+		});
+	}
 }
 
 app.get("/supported", (req, res) => {
